@@ -316,7 +316,8 @@ plt.suptitle('Spettri di potenza con fit - Dati mensili', fontsize=15,  y=0.998)
 plt.tight_layout()
 plt.show()
 '''
-
+# Inizializzaizione del seed 
+np.random.seed(1728)
 
 # Randomizza unicamente le misure temporali
 df_rand_date = {}
