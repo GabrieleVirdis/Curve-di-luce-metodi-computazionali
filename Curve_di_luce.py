@@ -76,7 +76,7 @@ for src in sources:
 colors = ['#e74c3c', '#3498db', '#2ecc71', '#f39c12']
 fit_colors = ['#c0392b', '#2980b9', '#27ae60', '#e67e22']
 
-'''
+
 # --- DATI SETTIMANALI ---
 fig, axs = plt.subplots(2, 2, figsize=(14, 10))
 
@@ -175,9 +175,8 @@ plt.title('Spettri di potenza settimanali - Confronto', fontsize=14, y=0.995)
 plt.tight_layout()
 plt.show()
 
-'''
 
-'''
+
 # Mensili
 
 plt.subplots(figsize= (11, 7))
@@ -196,10 +195,10 @@ plt.tick_params(labelsize=9)
 plt.title('Spettri di potenza mensili - Confronto', fontsize=14, y=0.995)
 plt.tight_layout()
 plt.show()
-'''
 
 
-'''
+
+
 # --- SPETTRO POTENZA MENSILE ---
 fig, axs = plt.subplots(2, 2, figsize=(14, 10))
 axs = axs.flatten()
@@ -209,8 +208,8 @@ for i, src in enumerate(data):
 
     psd = np.absolute(data[src]['fft_m'][:n])**2
     axs[i].plot(freq_m[:n], psd, color=colors[i], linewidth=2, label=src)
-    axs[i].set_xscale('log')
-    axs[i].set_yscale('log')
+    #axs[i].set_xscale('log')
+    #axs[i].set_yscale('log')
     axs[i].set_xlabel('f [Hz]', fontsize=11)
     axs[i].set_ylabel(r'$|c_k|^2$', fontsize=11)
     axs[i].legend(fontsize=9, loc='best')
@@ -219,11 +218,11 @@ for i, src in enumerate(data):
 plt.suptitle('Spettro di potenza - Dati mensili', fontsize=14, y=0.995)
 plt.tight_layout()
 plt.show()
-'''
 
 
-'''
-# Calcolo fit per tutte le sorgenti
+
+
+# ---CALCOLO DEL FIT PER LE TUTTE LE SORGENTI SETTIMANALI---
 fit_params = {}
 
 for src in data:
@@ -268,9 +267,8 @@ for i, src in enumerate(data):
 plt.suptitle('Spettri di potenza con fit - Dati settimanali', fontsize=15,  y=0.998)
 plt.tight_layout()
 plt.show()
-'''
-'''
-# Calcolo fit per tutte le sorgenti
+
+# CALCOLO DEL FIT PER LE SORGENTI MENSILI
 fit_params = {}
 
 for src in data:
@@ -315,9 +313,11 @@ for i, src in enumerate(data):
 plt.suptitle('Spettri di potenza con fit - Dati mensili', fontsize=15,  y=0.998)
 plt.tight_layout()
 plt.show()
+
 '''
 # Inizializzaizione del seed 
 np.random.seed(1728)
+
 
 # Randomizza unicamente le misure temporali
 df_rand_date = {}
@@ -331,6 +331,8 @@ for src in data:
     np.random.shuffle(df_m[col_date].values)
 
     df_rand_date[src] = {'w': df_w, 'm': df_m}
+
+
 
 # --- GRAFICI DATI SETTIMANALI RANDOMIZZATI---
 fig, axs = plt.subplots(2, 2, figsize=(14, 10))
@@ -348,6 +350,8 @@ plt.suptitle('Grafico del flusso Randomizzato - Dati settimanali', fontsize=14, 
 plt.tight_layout()
 plt.show()
 
+
+
 # --- GRAFICI DATI MENSILI RANDOMIZZATI ---
 fig, axs = plt.subplots(2, 2, figsize=(14, 10))
 axs = axs.flatten()
@@ -363,3 +367,67 @@ for i, src in enumerate(df_rand_date):
 plt.suptitle('Grafico del flusso Randomizzato - Dati mensili', fontsize=14, y=0.995)
 plt.tight_layout()
 plt.show()
+'''
+
+# --- ANALISI FOURIER DELLE CURVE DI LUCE SINTETICHE---
+for src in df_rand_date:
+    # Settimanale
+    dt_w = df_rand_date[src]['w'][col_date][1] - df_rand_date[src]['w'][col_date][0] # Intervallo di campionamento in giorni tra due misure consecutive
+    fft_w = fft.fft(df_rand_date[src]['w'][col_flux].values)
+    freq_w = fft.fftfreq(len(fft_w), d=dt_w)
+    
+    # Mensile
+    dt_m = df_rand_date[src]['m'][col_date][1] - df_rand_date[src]['m'][col_date][0] # Intervallo di campionamento in giorni tra due misure consecutive
+    fft_m = fft.fft(df_rand_date[src]['m'][col_flux].values)
+    freq_m = fft.fftfreq(len(fft_m), d=dt_m)
+    
+    # Salva FFT
+    df_rand_date[src].update({'fft_w': fft_w,  'freq_w' : freq_w, 'fft_m' : fft_m,  'freq_m' : freq_m})
+
+
+# ---CALCOLO DEL FIT PER LE TUTTE LE SORGENTI SETTIMANALI SINTETICHE---
+fit_params = {}
+
+for src in enumerate(df_rand_date):
+    n = len(df_rand_date[src]['fft_w']) // 2
+    freq = df_rand_date[src]['freq_w'][2:n]
+    psd = np.absolute(df_rand_date[src]['fft_w'][2:n])**2
+    
+    pv, pc = optimize.curve_fit(noisef, freq, psd, p0=[1, 1])
+    fit_params[src] = {'pv': pv, 'pc': pc}
+    print(f'{src}: β = {pv[1]:.2f} ± {np.sqrt(pc[1,1]):.2f}')
+
+# Grafico con 4 pannelli (uno per ogni sorgente)
+fig, axs = plt.subplots(2, 2, figsize=(15, 11))
+axs = axs.flatten()
+
+# Un pannello per ogni sorgente
+for i, src in enumerate(data):
+    n = len(df_rand_date[src]['fft_w']) // 2
+    freq = df_rand_date[src]['freq_w'][:n]
+    psd = np.absolute(df_rand_date[src]['fft_w'][:n])**2
+    
+    pv = fit_params[src]['pv']
+    pc = fit_params[src]['pc']
+    
+    # Dati
+    axs[i].plot(freq, psd, color=colors[i], linewidth=2, alpha=0.7, label='Dati')
+    
+    # Fit
+    axs[i].plot(freq[1:], noisef(freq[1:], pv[0], pv[1]), 
+                color=fit_colors[i], linewidth=2.5, linestyle='--', 
+                label=f'Fit: β = {pv[1]:.2f} ± {np.sqrt(pc[1,1]):.2f}')
+    
+    axs[i].set_xscale('log')
+    axs[i].set_yscale('log')
+    axs[i].set_xlabel('f [1/days]', fontsize=11)
+    axs[i].set_ylabel(r'$|c_k|^2', fontsize=11)
+    axs[i].set_title(src, fontsize=12, fontweight='bold')
+    axs[i].legend(fontsize=9, loc='best')
+    axs[i].tick_params(labelsize=9)
+    axs[i].grid(True, alpha=0.3, linestyle=':')
+
+plt.suptitle('Spettri di potenza con fit - Dati settimanali sintetici', fontsize=15,  y=0.998)
+plt.tight_layout()
+plt.show()
+
