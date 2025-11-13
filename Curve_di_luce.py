@@ -61,28 +61,29 @@ for source in dcw_source:
     
     dfw_source = pd.read_csv ( dcw_source[source] ) # lettura delle sorgenti.csv
 
-# Tratto i limiti sup e i dati incerti    											
-    dfw_source[flux] = dfw_source[flux].replace('<', '') # Rimozione '<' dal flusso e conversione in dato float   
-    dfw_source[flux_err] = dfw_source[flux_err].replace('-', '0') # Sostituzione '-' con 0 negli errori
-
+    dfw_source[flux] = pd.to_numeric(dfw_source[flux].astype('string').str.replace('<', ''))
+    dfw_source[flux_err] = pd.to_numeric(dfw_source[flux_err].replace('-', '0'))
+    
     dcfw_source[source] = dfw_source # riempimento del nuovo dizionario
+
+
+# Pulizia dei limit sup ed errori incerti
 
 
 ### Grafici ###
 
 colors = ['darkgreen', 'darkred', 'darkblue', 'darkorange']
 
-'''
-# --- DATI SETTIMANALI ---
+
+# --- GRAFICI SORGENTI ---
 fig, axs = plt.subplots(2, 2, figsize=(14, 10))
 
 axs = axs.flatten()
 
-for i, src in enumerate(data):
-    d = data[src]['w']
-    axs[i].errorbar(d[col_date], d[col_flux], yerr=d[col_err], 
+for i, source in enumerate(dcfw_source): # enumerate perché così fai il counter solo con le chiavi del dizionario che sono le sorgenti 
+    axs[i].errorbar(dcfw_source[source][date], dcfw_source[source][flux], yerr=dcfw_source[source][flux_err], 
                      capsize=4, color=colors[i], fmt= 'o',  markersize=4,
-                    elinewidth=1.5, alpha=0.7, label=src)
+                    elinewidth=1.5, alpha=0.7, label=source)
     axs[i].set_xlabel('Julian Date', fontsize=11)
     axs[i].set_ylabel('Photon Flux [0.1-100 GeV](photons cm-2 s-1)', fontsize=10)
     axs[i].legend(fontsize=9, loc='best')
@@ -92,6 +93,8 @@ plt.suptitle('Grafico del flusso - Dati settimanali', fontsize=14, y=0.995)
 plt.tight_layout()
 plt.show()
 
+
+'''
 for src in data:
     # Settimanale
     dt_w = data[src]['w'][col_date][1] - data[src]['w'][col_date][0] # Intervallo di campionamento in giorni tra due misure consecutive
