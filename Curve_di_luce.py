@@ -93,36 +93,28 @@ plt.suptitle('Grafico del flusso - Dati settimanali', fontsize=14, y=0.995)
 plt.tight_layout()
 plt.show()
 
-
-'''
-for src in data:
-    # Settimanale
-    dt_w = data[src]['w'][col_date][1] - data[src]['w'][col_date][0] # Intervallo di campionamento in giorni tra due misure consecutive
-    fft_w = fft.fft(data[src]['w'][col_flux].values)
-    freq_w = fft.fftfreq(len(fft_w), d=dt_w)
-    
-    # Mensile
-    dt_m = data[src]['m'][col_date][1] - data[src]['m'][col_date][0]
-    fft_m = fft.fft(data[src]['m'][col_flux].values)
-    freq_m = fft.fftfreq(len(fft_m), d=dt_m)
+# >>> ANALISI DI FOURIER
+for source in enumerate(dcfw_source):
+  
+    dt_w = dcfw_source[source][date][1] - dcfw_source[source][date][0] # Intervallo di campionamento in giorni tra due misure consecutive
+    fft_w = fft.fft(dcfw_source[source][flux].values) # Calcolo dei coefficenti di Fourier
+    freq_w = fft.fftfreq(len(fft_w), d=dt_w) # Calcolo delle frequenze
     
     # Salva FFT
-    data[src].update({'fft_w' : fft_w,  'freq_w' : freq_w, 'fft_m' : fft_m,  'freq_m' : freq_m})
+    dcfw_source[source].update({'fft_w' : fft_w,  'freq_w' : freq_w, 'fft_m' : fft_m,  'freq_m' : freq_m}) # Aggiornamento del dictionary con i dataframe di Fourier
 
 
 # --- SPETTRO POTENZA SETTIMANALE ---
 fig, axs = plt.subplots(2, 2, figsize=(14, 10))
 axs = axs.flatten()
 
-for i, src in enumerate(data):
+for i, src in enumerate(dcfw_source):
 
-    n = len(data[src]['fft_w']) // 2
-    
-    psd = np.absolute(data[src]['fft_w'][:n])**2
-    axs[i].plot(data[src]['freq_w'][:n], psd, color=colors[i], linewidth=2, label=src)
-    axs[i].set_xscale('log')
+    psw = np.absolute(dcfw_source[source]['fft_w'][: len(dcfw_source[source]['fft_w']) // 2])**2
+    axs[i].plot(dcfw_source[source]['freq_w'][:len(dcfw_source[source]['fft_w']) // 2], psw, color=colors[i], linewidth=2, label=source)
+    axs[i].set_xscale('log') 
     axs[i].set_yscale('log')
-    axs[i].set_xlabel('f [Hz]', fontsize=11)
+    axs[i].set_xlabel('f [Hz]', fontsize=11) 
     axs[i].set_ylabel(r'$|c_k|^2$', fontsize=11)
     axs[i].legend(fontsize=9, loc='best')
     axs[i].tick_params(labelsize=9)
@@ -137,10 +129,10 @@ plt.show()
 # Settimali
 plt.subplots(figsize= (11, 7))
 
-for i, src in enumerate(data):
-    n = len(data[src]['freq_w']) // 2 
-    psd = np.absolute(data[src]['fft_w'][:n])**2    
-    plt.plot(data[src]['freq_w'][:n], psd, color=colors[i], linewidth=2, label=src)
+for i, source in enumerate(dcfw_source):
+    n = len(dcfw_source[source]['freq_w']) // 2 
+    psw = np.absolute(dcfw_source[source]['fft_w'][:n])**2    
+    plt.plot(dcfw_source[source]['freq_w'][:len(dcfw_source[source]['freq_w']) // 2], psw, color=colors[i], linewidth=2, label=src) 
 
 plt.xscale('log')
 plt.yscale('log')
@@ -152,21 +144,14 @@ plt.title('Spettri di potenza settimanali - Confronto', fontsize=14, y=0.995)
 plt.tight_layout()
 plt.show()
 
-
-
-
-
-
-
 # ---CALCOLO DEL FIT PER LE TUTTE LE SORGENTI SETTIMANALI---
 fit_params = {}
 
-for src in data:
-    n = len(data[src]['fft_w']) // 2
-    freq = data[src]['freq_w'][2:n]
-    psd = np.absolute(data[src]['fft_w'][2:n])**2
+for source in dcfw_source:
+    freq = data[src]['freq_w'][2:len(dcfws_source[source]['fft_w']) // 2] 
+    psw = np.absolute(data[src]['fft_w'][2:])**2
     
-    pv, pc = optimize.curve_fit(noisef, freq, psd, p0=[1, 1])
+    pv, pc = optimize.curve_fit(noisef, freq, psw, p0=[1, 1])
     fit_params[src] = {'pv': pv, 'pc': pc}
     print(f'{src}: β = {pv[1]:.2f} ± {np.sqrt(pc[1,1]):.2f}')
 
@@ -175,10 +160,9 @@ fig, axs = plt.subplots(2, 2, figsize=(15, 11))
 axs = axs.flatten()
 
 # Un pannello per ogni sorgente
-for i, src in enumerate(data):
-    n = len(data[src]['fft_w']) // 2
-    freq = data[src]['freq_w'][:n]
-    psd = np.absolute(data[src]['fft_w'][:n])**2
+for i, source in enumerate(dcfw_source):
+    freq = data[src]['freq_w'][:len(dcfw_source[source]['fft_w']) // 2]
+    psd = np.absolute(data[src]['fft_w'][: len(dcfw_source[source]['fft_w']) // 2])**2
     
     pv = fit_params[src]['pv']
     pc = fit_params[src]['pc']
