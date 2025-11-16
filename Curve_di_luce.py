@@ -59,7 +59,7 @@ dcfw_source = { }
 # Ciclo per aggiungere al nuovo dizionario i dataframe
 for source in dcw_source: 
     
-    dfw_source = pd.read_csv ( dcw_source[source] ) # lettura delle sorgenti.csv
+    dfw_source = pd.read_csv(dcw_source[source]) # lettura delle sorgenti.csv
 
     dfw_source[flux] = pd.to_numeric(dfw_source[flux].astype('string').str.replace('<', ''))
     dfw_source[flux_err] = pd.to_numeric(dfw_source[flux_err].replace('-', '0'))
@@ -73,6 +73,7 @@ for source in dcw_source:
 ### Grafici ###
 
 colors = ['darkgreen', 'darkred', 'darkblue', 'darkorange']
+fit_colors = ['lime', 'red', 'cyan', 'gold']  # Aggiunti colori per il fit
 
 
 # --- GRAFICI SORGENTI ---
@@ -82,7 +83,7 @@ axs = axs.flatten()
 
 for i, source in enumerate(dcfw_source): # enumerate perché così fai il counter solo con le chiavi del dizionario che sono le sorgenti 
     axs[i].errorbar(dcfw_source[source][date], dcfw_source[source][flux], yerr=dcfw_source[source][flux_err], 
-                     capsize=4, color=colors[i], fmt= 'o',  markersize=4,
+                     capsize=4, color=colors[i], fmt='o', markersize=4,
                     elinewidth=1.5, alpha=0.7, label=source)
     axs[i].set_xlabel('Julian Date', fontsize=11)
     axs[i].set_ylabel('Photon Flux [0.1-100 GeV](photons cm-2 s-1)', fontsize=10)
@@ -93,25 +94,29 @@ plt.suptitle('Grafico del flusso - Dati settimanali', fontsize=14, y=0.995)
 plt.tight_layout()
 plt.show()
 
+
 # >>> ANALISI DI FOURIER
-for source in enumerate(dcfw_source):
+for source in dcfw_source:
   
     dt_w = dcfw_source[source][date][1] - dcfw_source[source][date][0] # Intervallo di campionamento in giorni tra due misure consecutive
-    fft_w = fft.fft(dcfw_source[source][flux].values) # Calcolo dei coefficenti di Fourier
+    fft_w = fft.fft(np.array(dcfw_source[source][flux].values , dtype=float)) # Calcolo dei coefficenti di Fourier
     freq_w = fft.fftfreq(len(fft_w), d=dt_w) # Calcolo delle frequenze
     
-    # Salva FFT
-    dcfw_source[source].update({'fft_w' : fft_w,  'freq_w' : freq_w, 'fft_m' : fft_m,  'freq_m' : freq_m}) # Aggiornamento del dictionary con i dataframe di Fourier
+    # Salva FFT (rimosso fft_m e freq_m che non sono definiti)
+    dcfw_source[source]['fft_w'] = fft_w
+    dcfw_source[source]['freq_w'] = freq_w
 
 
 # --- SPETTRO POTENZA SETTIMANALE ---
 fig, axs = plt.subplots(2, 2, figsize=(14, 10))
 axs = axs.flatten()
 
-for i, src in enumerate(dcfw_source):
+for i, source in enumerate(dcfw_source):
 
-    psw = np.absolute(dcfw_source[source]['fft_w'][: len(dcfw_source[source]['fft_w']) // 2])**2
-    axs[i].plot(dcfw_source[source]['freq_w'][:len(dcfw_source[source]['fft_w']) // 2], psw, color=colors[i], linewidth=2, label=source)
+    axs[i].plot(dcfw_source[source]['freq_w'][:len(dcfw_source[source]['fft_w']) // 2], 
+                np.absolute(dcfw_source[source]['fft_w'][:len(dcfw_source[source]['fft_w']) // 2])**2, 
+                color=colors[i], linewidth=2, label=source)
+    
     axs[i].set_xscale('log') 
     axs[i].set_yscale('log')
     axs[i].set_xlabel('f [Hz]', fontsize=11) 
@@ -126,13 +131,14 @@ plt.show()
 
 # --- CONFRONTO TRA GLI SPETTRI DI POTENZA --- 
 
-# Settimali
-plt.subplots(figsize= (11, 7))
+# Settimanali
+plt.subplots(figsize=(11, 7))
 
 for i, source in enumerate(dcfw_source):
-    n = len(dcfw_source[source]['freq_w']) // 2 
-    psw = np.absolute(dcfw_source[source]['fft_w'][:n])**2    
-    plt.plot(dcfw_source[source]['freq_w'][:len(dcfw_source[source]['freq_w']) // 2], psw, color=colors[i], linewidth=2, label=src) 
+    
+    plt.plot(dcfw_source[source]['freq_w'][:len(dcfw_source[source]['freq_w']) // 2], 
+            np.absolute(dcfw_source[source]['fft_w'][:len(dcfw_source[source]['freq_w']) // 2])**2, 
+            color=colors[i], linewidth=2, label=source) 
 
 plt.xscale('log')
 plt.yscale('log')
@@ -148,12 +154,12 @@ plt.show()
 fit_params = {}
 
 for source in dcfw_source:
-    freq = data[src]['freq_w'][2:len(dcfws_source[source]['fft_w']) // 2] 
-    psw = np.absolute(data[src]['fft_w'][2:])**2
+    freq = dcfw_source[source]['freq_w'][2:len(dcfw_source[source]['fft_w']) // 2] 
+    psw = np.absolute(dcfw_source[source]['fft_w'][2:len(dcfw_source[source]['fft_w']) // 2])**2
     
     pv, pc = optimize.curve_fit(noisef, freq, psw, p0=[1, 1])
-    fit_params[src] = {'pv': pv, 'pc': pc}
-    print(f'{src}: β = {pv[1]:.2f} ± {np.sqrt(pc[1,1]):.2f}')
+    fit_params[source] = {'pv': pv, 'pc': pc}
+    print(f'{source}: β = {pv[1]:.2f} ± {np.sqrt(pc[1,1]):.2f}')
 
 # Grafico con 4 pannelli (uno per ogni sorgente)
 fig, axs = plt.subplots(2, 2, figsize=(15, 11))
@@ -161,11 +167,11 @@ axs = axs.flatten()
 
 # Un pannello per ogni sorgente
 for i, source in enumerate(dcfw_source):
-    freq = data[src]['freq_w'][:len(dcfw_source[source]['fft_w']) // 2]
-    psd = np.absolute(data[src]['fft_w'][: len(dcfw_source[source]['fft_w']) // 2])**2
+    freq = dcfw_source[source]['freq_w'][:len(dcfw_source[source]['fft_w']) // 2]
+    psd = np.absolute(dcfw_source[source]['fft_w'][:len(dcfw_source[source]['fft_w']) // 2])**2
     
-    pv = fit_params[src]['pv']
-    pc = fit_params[src]['pc']
+    pv = fit_params[source]['pv']
+    pc = fit_params[source]['pc']
     
     # Dati
     axs[i].plot(freq, psd, color=colors[i], linewidth=2, alpha=0.7, label='Dati')
@@ -178,37 +184,37 @@ for i, source in enumerate(dcfw_source):
     axs[i].set_xscale('log')
     axs[i].set_yscale('log')
     axs[i].set_xlabel('f [1/days]', fontsize=11)
-    axs[i].set_ylabel(r'$|c_k|^2', fontsize=11)
-    axs[i].set_title(src, fontsize=12, fontweight='bold')
+    axs[i].set_ylabel(r'$|c_k|^2$', fontsize=11)
+    axs[i].set_title(source, fontsize=12)
     axs[i].legend(fontsize=9, loc='best')
     axs[i].tick_params(labelsize=9)
     axs[i].grid(True, alpha=0.3, linestyle=':')
 
-plt.suptitle('Spettri di potenza con fit - Dati settimanali', fontsize=15,  y=0.998)
+plt.suptitle('Spettri di potenza con fit - Dati settimanali', fontsize=15, y=0.998)
 plt.tight_layout()
 plt.show()
 
 
-# Inizializzaizione del seed 
+# Inizializzazione del seed 
 np.random.seed(1728)
 
 # Randomizza unicamente le misure temporali
 df_rand_date = {}
-for src in data:
+for source in dcfw_source:
     # Dati settimanali
-    df_w = data[src]['w'].copy()
-    np.random.shuffle(df_w[col_date].values)
+    df_w = dcfw_source[source].copy()
+    np.random.shuffle(df_w[date].values)
 
-    df_rand_date[src] = {'w': df_w, 'm': df_m}
+    df_rand_date[source] = {'w': df_w}
 
 # --- GRAFICI DATI SETTIMANALI RANDOMIZZATI---
 fig, axs = plt.subplots(2, 2, figsize=(14, 10))
 axs = axs.flatten()
-for i, src in enumerate(df_rand_date):
-    d = df_rand_date[src]['w']
-    axs[i].errorbar(d[col_date], d[col_flux], yerr=d[col_err],
+for i, source in enumerate(df_rand_date):
+    d = df_rand_date[source]['w']
+    axs[i].errorbar(d[date], d[flux], yerr=d[flux_err],
                      capsize=4, color=colors[i], fmt='o', markersize=4,
-                    elinewidth=1.5, alpha=0.7, label=src)
+                    elinewidth=1.5, alpha=0.7, label=source)
     axs[i].set_xlabel('Julian Date', fontsize=11)
     axs[i].set_ylabel('Photon Flux [0.1-100 GeV](photons cm-2 s-1)', fontsize=10)
     axs[i].legend(fontsize=9, loc='best')
@@ -216,4 +222,4 @@ for i, src in enumerate(df_rand_date):
 plt.suptitle('Grafico del flusso Randomizzato - Dati settimanali', fontsize=14, y=0.995)
 plt.tight_layout()
 plt.show()
-'''
+
