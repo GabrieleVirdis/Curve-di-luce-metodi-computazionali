@@ -10,9 +10,11 @@ import numpy as np
 import pandas as pd
 from scipy import constants, fft, optimize
 import matplotlib.pyplot as plt
+
+
 import argparse
 
-### --- FUNZIONE PER IL FIT SPETTRO DI POTENZA ---
+# Funzione per il fit dello spettro di potenza
 
 def noisef(f, N, beta):
     """
@@ -27,8 +29,7 @@ def noisef(f, N, beta):
 
     return N/f**beta
 
-
-### ANALISI SETTIMANALE ###
+# ANALISI SETTIMANALE
 
 # Dizionario delle sorgenti settimanali
 dcw_source = {
@@ -61,34 +62,30 @@ for source in dcw_source:
     
     dfw_source = pd.read_csv(dcw_source[source]) # lettura delle sorgenti.csv
 
-    dfw_source[flux] = pd.to_numeric(dfw_source[flux].astype('string').str.replace('<', ''))
-    dfw_source[flux_err] = pd.to_numeric(dfw_source[flux_err].replace('-', '0'))
+    # Pulizia dei dati
+    dfw_source[flux] = dfw_source[flux].replace('<', '')
+    dfw_source[flux_err] = dfw_source[flux_err].replace('-', 0)
     
     dcfw_source[source] = dfw_source # riempimento del nuovo dizionario
 
-
-# Pulizia dei limit sup ed errori incerti
-
-
 ### Grafici ###
 
-colors = ['darkgreen', 'darkred', 'darkblue', 'darkorange']
-fit_colors = ['lime', 'red', 'cyan', 'gold']  # Aggiunti colori per il fit
+colors = ['darkgreen', 'darkred', 'darkblue', 'darkorange'] # Colori per i grafici per suddividere le sorgenti
+fit_colors = ['lime', 'red', 'cyan', 'gold']  # Insieme di colori per il fit
 
 
 # --- GRAFICI SORGENTI ---
 fig, axs = plt.subplots(2, 2, figsize=(14, 10))
 
-axs = axs.flatten()
+axs = axs.flatten() # converte in array 1D per fare il ciclo for
 
-for i, source in enumerate(dcfw_source): # enumerate perché così fai il counter solo con le chiavi del dizionario che sono le sorgenti 
-    axs[i].errorbar(dcfw_source[source][date], dcfw_source[source][flux], yerr=dcfw_source[source][flux_err], 
-                     capsize=4, color=colors[i], fmt='o', markersize=4,
-                    elinewidth=1.5, alpha=0.7, label=source)
-    axs[i].set_xlabel('Julian Date', fontsize=11)
-    axs[i].set_ylabel('Photon Flux [0.1-100 GeV](photons cm-2 s-1)', fontsize=10)
-    axs[i].legend(fontsize=9, loc='best')
-    axs[i].tick_params(labelsize=9)
+i=0 # Inizializzo i
+for source in dcfw_source:
+        axs[i].errorbar(dcfw_source[source][date], dcfw_source[source][flux], yerr=dcfw_source[source][flux_err], color=colors[i], label=source)
+        axs[i].set_xlabel('Julian Date', fontsize=11)
+        axs[i].set_ylabel('Photon Flux [0.1-100 GeV](photons cm-2 s-1)', fontsize=10)
+        axs[i].legend(fontsize=9, loc='best')
+        i += 1 # aumento il contatore
 
 plt.suptitle('Grafico del flusso - Dati settimanali', fontsize=14, y=0.995)
 plt.tight_layout()
@@ -99,7 +96,7 @@ plt.show()
 for source in dcfw_source:
   
     dt_w = dcfw_source[source][date][1] - dcfw_source[source][date][0] # Intervallo di campionamento in giorni tra due misure consecutive
-    fft_w = fft.fft(np.array(dcfw_source[source][flux].values , dtype=float)) # Calcolo dei coefficenti di Fourier
+    fft_w = fft.fft(dcfw_source[source][flux].values) # Calcolo dei coefficenti di Fourier
     freq_w = fft.fftfreq(len(fft_w), d=dt_w) # Calcolo delle frequenze
     
     # Salva FFT (rimosso fft_m e freq_m che non sono definiti)
