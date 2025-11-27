@@ -29,6 +29,31 @@ def noisef(f, N, beta):
 
     return N/f**beta
 
+
+def parse_arguments():
+
+    parser = argparse.ArgumentParser(description='plot delle curve di luce, spettro di potenza e curve di luce sintetiche',
+                                     usage      ='python3 Curve_di_luce.py  --opzioni')
+    parser.add_argument('--cdlw', action='store_true', help='Plot delle curve di luce settimanali')
+    parser.add_argument('--sdpw', action='store_true', help='Plot dello spettro di potenza')
+    parser.add_argument('--sdpfw', action='store_true', help='Fit dello spettro di potenza')
+    parser.add_argument('--clsw', action='store_true', help='Plot delle curve di luce sintentiche')
+   
+
+    # Mensile
+'''
+    parser.add_argument('--cdlm', action='store_true', help='Plot delle curve di luce')
+    parser.add_argument('--sdpm', action='store_true', help='Plot dello spettro di potenza')
+    parser.add_argument('--sdpfm', action='store_true', help='Fit dello spettro di potenza')
+    parser.add_argument('--clsm', action='store_true', help='Plot delle curve di luce sintentiche')
+
+''' 
+
+
+
+    return  parser.parse_args(args=None if sys.argv[1:] else ['--help'])
+
+
 # ANALISI SETTIMANALE
 
 # Dizionario delle sorgenti settimanali
@@ -52,7 +77,6 @@ flux = 'Photon Flux [0.1-100 GeV](photons cm-2 s-1)'
 flux_err = 'Photon Flux Error(photons cm-2 s-1)'
 date = 'Julian Date'
 
-
 # Creo un nuovo dizionario contenente i dataframe settimanali
 
 dcfw_source = { } 
@@ -61,11 +85,13 @@ dcfw_source = { }
 for source in dcw_source: 
     
     dfw_source = pd.read_csv(dcw_source[source]) # lettura delle sorgenti.csv
-
-    # Pulizia dei dati
-    dfw_source[flux] = dfw_source[flux].replace('<', '')
-    dfw_source[flux_err] = dfw_source[flux_err].replace('-', 0)
     
+    dfw_source[flux] = dfw_source[flux].str.replace('<' , '') # Permette di vedere tutta la stringa e usare il valore limite superiore
+    dfw_source[flux] = dfw_source[flux].astype(float) # riporto tutto float sennò sono tipo stringe o oggetto
+
+    dfw_source[flux_err] = np.where(dfw_source[flux_err] == '-', 0 , dfw_source[flux_err]) # Uso where al posto di replace sennò errore dovuto alla notazione scientifica
+    dfw_source[flux_err] = dfw_source[flux_err].astype(float)
+
     dcfw_source[source] = dfw_source # riempimento del nuovo dizionario
 
 ### Grafici ###
@@ -92,7 +118,7 @@ plt.tight_layout()
 plt.show()
 
 
-# >>> ANALISI DI FOURIER
+# ANALISI DI FOURIER
 for source in dcfw_source:
   
     dt_w = dcfw_source[source][date][1] - dcfw_source[source][date][0] # Intervallo di campionamento in giorni tra due misure consecutive
@@ -108,8 +134,9 @@ for source in dcfw_source:
 fig, axs = plt.subplots(2, 2, figsize=(14, 10))
 axs = axs.flatten()
 
-for i, source in enumerate(dcfw_source):
 
+i= 0 
+for source in dcfw_source:
     axs[i].plot(dcfw_source[source]['freq_w'][:len(dcfw_source[source]['fft_w']) // 2], 
                 np.absolute(dcfw_source[source]['fft_w'][:len(dcfw_source[source]['fft_w']) // 2])**2, 
                 color=colors[i], linewidth=2, label=source)
@@ -120,6 +147,7 @@ for i, source in enumerate(dcfw_source):
     axs[i].set_ylabel(r'$|c_k|^2$', fontsize=11)
     axs[i].legend(fontsize=9, loc='best')
     axs[i].tick_params(labelsize=9)
+    i += 1 
 
 plt.suptitle('Spettro di potenza - Dati settimanali', fontsize=14, y=0.995)
 plt.tight_layout()
@@ -131,12 +159,14 @@ plt.show()
 # Settimanali
 plt.subplots(figsize=(11, 7))
 
-for i, source in enumerate(dcfw_source):
+i = 0
+for source in dcfw_source:
     
     plt.plot(dcfw_source[source]['freq_w'][:len(dcfw_source[source]['freq_w']) // 2], 
             np.absolute(dcfw_source[source]['fft_w'][:len(dcfw_source[source]['freq_w']) // 2])**2, 
             color=colors[i], linewidth=2, label=source) 
-
+    i += 1
+    
 plt.xscale('log')
 plt.yscale('log')
 plt.xlabel('f [Hz]', fontsize=11)
@@ -163,7 +193,10 @@ fig, axs = plt.subplots(2, 2, figsize=(15, 11))
 axs = axs.flatten()
 
 # Un pannello per ogni sorgente
-for i, source in enumerate(dcfw_source):
+i = 0
+for source in dcfw_source:
+
+
     freq = dcfw_source[source]['freq_w'][:len(dcfw_source[source]['fft_w']) // 2]
     psd = np.absolute(dcfw_source[source]['fft_w'][:len(dcfw_source[source]['fft_w']) // 2])**2
     
@@ -187,6 +220,10 @@ for i, source in enumerate(dcfw_source):
     axs[i].tick_params(labelsize=9)
     axs[i].grid(True, alpha=0.3, linestyle=':')
 
+    i += 1
+
+
+
 plt.suptitle('Spettri di potenza con fit - Dati settimanali', fontsize=15, y=0.998)
 plt.tight_layout()
 plt.show()
@@ -199,24 +236,40 @@ np.random.seed(1728)
 df_rand_date = {}
 for source in dcfw_source:
     # Dati settimanali
-    df_w = dcfw_source[source].copy()
-    np.random.shuffle(df_w[date].values)
+    dfr_w = dcfw_source[source].copy()
+    np.random.shuffle(dfr_w[date].values)
 
-    df_rand_date[source] = {'w': df_w}
+    df_rand_date[source] = dfr_w
 
 # --- GRAFICI DATI SETTIMANALI RANDOMIZZATI---
 fig, axs = plt.subplots(2, 2, figsize=(14, 10))
 axs = axs.flatten()
-for i, source in enumerate(df_rand_date):
-    d = df_rand_date[source]['w']
-    axs[i].errorbar(d[date], d[flux], yerr=d[flux_err],
-                     capsize=4, color=colors[i], fmt='o', markersize=4,
-                    elinewidth=1.5, alpha=0.7, label=source)
+
+i=0 # Inizializzo i
+for source in dcfw_source:
+    axs[i].errorbar(df_rand_date[source][date], dcfw_source[source][flux], yerr=dcfw_source[source][flux_err], color=colors[i], label=source)
     axs[i].set_xlabel('Julian Date', fontsize=11)
     axs[i].set_ylabel('Photon Flux [0.1-100 GeV](photons cm-2 s-1)', fontsize=10)
     axs[i].legend(fontsize=9, loc='best')
-    axs[i].tick_params(labelsize=9)
-plt.suptitle('Grafico del flusso Randomizzato - Dati settimanali', fontsize=14, y=0.995)
+    i += 1 # aumento il contatore
+
+plt.suptitle('Grafico del flusso randomizzato - Dati settimanali', fontsize=14, y=0.995)
 plt.tight_layout()
 plt.show()
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
