@@ -86,8 +86,8 @@ def main():
         for source in dcfw_source:
             axs[i].errorbar(dcfw_source[source][date], dcfw_source[source][flux], 
                           yerr=dcfw_source[source][flux_err], color=colors[i], label=source)
-            axs[i].set_xlabel('Julian Date', fontsize=11)
-            axs[i].set_ylabel('Photon Flux [0.1-100 GeV](photons cm-2 s-1)', fontsize=10)
+            axs[i].set_xlabel('Julian Date')
+            axs[i].set_ylabel('Photon Flux [0.1-100 GeV](photons cm-2 s-1)')
             axs[i].legend(loc='best')
             i += 1
         plt.suptitle('Grafico del flusso - Dati settimanali')
@@ -112,14 +112,14 @@ def main():
         for source in dcfw_source:
             axs[i].plot(dcfw_source[source]['freq_w'][:len(dcfw_source[source]['fft_w']) // 2], 
                        np.absolute(dcfw_source[source]['fft_w'][:len(dcfw_source[source]['fft_w']) // 2])**2, 
-                       color=colors[i], linewidth=2, label=source)
+                       color=colors[i], label=source)
             axs[i].set_xscale('log')
             axs[i].set_yscale('log')
-            axs[i].set_xlabel('f [Hz]', fontsize=11)
-            axs[i].set_ylabel(r'$|c_k|^2$', fontsize=11)
-            axs[i].legend(fontsize=9, loc='best')
-            axs[i].tick_params(labelsize=9)
+            axs[i].set_xlabel('f [Hz]')
+            axs[i].set_ylabel(r'$|c_k|^2$')
+            axs[i].legend(loc='best')
             i += 1
+
         plt.suptitle('Spettro di potenza - Dati settimanali')
         plt.tight_layout()
         plt.show()
@@ -134,10 +134,9 @@ def main():
             i += 1
         plt.xscale('log')
         plt.yscale('log')
-        plt.xlabel('f [Hz]', fontsize=11)
-        plt.ylabel(r'$|c_k|^2$', fontsize=11)
-        plt.legend(fontsize=9, loc='best')
-        plt.tick_params(labelsize=9)
+        plt.xlabel('f [Hz]')
+        plt.ylabel(r'$|c_k|^2$')
+        plt.legend(loc='best')
         plt.title('Spettri di potenza settimanali - Confronto')
         plt.tight_layout()
         plt.show()
@@ -168,8 +167,8 @@ def main():
                        label=f'Fit: β = {pv[1]:.2f} ± {np.sqrt(pc[1,1]):.2f}')
             axs[i].set_xscale('log')
             axs[i].set_yscale('log')
-            axs[i].set_xlabel('f [1/days]', fontsize=11)
-            axs[i].set_ylabel(r'$|c_k|^2$', fontsize=11)
+            axs[i].set_xlabel('f [1/days]')
+            axs[i].set_ylabel(r'$|c_k|^2$')
             axs[i].set_title(source)
             axs[i].legend(fontsize=13, loc='best')
             axs[i].grid(True)
@@ -195,10 +194,9 @@ def main():
                           yerr=dcfw_source[source][flux_err], color=colors[i], label=source)
             axs[i].set_xlabel('Julian Date')
             axs[i].set_ylabel('Photon Flux [0.1-100 GeV](photons cm-2 s-1)')
-            axs[i].legend(fontsize=12, loc='best')
+            axs[i].legend(loc='best')
             i += 1
         plt.suptitle('Grafico del flusso randomizzato - Dati settimanali')
-        plt.tight_layout()
         plt.show()
 
 
@@ -231,8 +229,8 @@ def main():
         for source in dcfm_source:
             axs[i].errorbar(dcfm_source[source][date], dcfm_source[source][flux], 
                           yerr=dcfm_source[source][flux_err], color=colors[i], label=source)
-            axs[i].set_xlabel('Julian Date', fontsize=11)
-            axs[i].set_ylabel('Photon Flux [0.1-100 GeV](photons cm-2 s-1)', fontsize=10)
+            axs[i].set_xlabel('Julian Date')
+            axs[i].set_ylabel('Photon Flux [0.1-100 GeV](photons cm-2 s-1)')
             axs[i].legend(loc='best')
             i += 1
         plt.suptitle('Grafico del flusso - Dati mensili')
@@ -257,13 +255,12 @@ def main():
         for source in dcfm_source:
             axs[i].plot(dcfm_source[source]['freq_m'][:len(dcfm_source[source]['fft_m']) // 2], 
                        np.absolute(dcfm_source[source]['fft_m'][:len(dcfm_source[source]['fft_m']) // 2])**2, 
-                       color=colors[i], linewidth=2, label=source)
+                       color=colors[i], label=source)
             axs[i].set_xscale('log')
             axs[i].set_yscale('log')
-            axs[i].set_xlabel('f [Hz]', fontsize=11)
-            axs[i].set_ylabel(r'$|c_k|^2$', fontsize=11)
-            axs[i].legend(fontsize=9, loc='best')
-            axs[i].tick_params(labelsize=9)
+            axs[i].set_xlabel('f [Hz]')
+            axs[i].set_ylabel(r'$|c_k|^2$')
+            axs[i].legend(loc='best')
             i += 1
         plt.suptitle('Spettro di potenza - Dati mensili')
         plt.tight_layout()
@@ -279,10 +276,9 @@ def main():
             i += 1
         plt.xscale('log')
         plt.yscale('log')
-        plt.xlabel('f [Hz]', fontsize=11)
-        plt.ylabel(r'$|c_k|^2$', fontsize=11)
-        plt.legend(fontsize=9, loc='best')
-        plt.tick_params(labelsize=9)
+        plt.xlabel('f [Hz]')
+        plt.ylabel(r'$|c_k|^2$')
+        plt.legend(loc='best')
         plt.title('Spettri di potenza mensili - Confronto')
         plt.tight_layout()
         plt.show()
@@ -340,8 +336,9 @@ def main():
                           yerr=dcfm_source[source][flux_err], color=colors[i], label=source)
             axs[i].set_xlabel('Julian Date')
             axs[i].set_ylabel('Photon Flux [0.1-100 GeV](photons cm-2 s-1)')
-            axs[i].legend(fontsize=12, loc='best')
+            axs[i].legend(loc='best')
             i += 1
+
         plt.suptitle('Grafico del flusso randomizzato - Dati mensili')
         plt.tight_layout()
         plt.show()
@@ -350,4 +347,3 @@ def main():
 if __name__ == "__main__":
 
     main()
-
