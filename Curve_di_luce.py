@@ -1,6 +1,6 @@
 '''
 Gabriele Virdis (gabriele.virdis@studenti.unipg.it)
-
+h
 - Università degli Studi di Perugia
 - Corso di Metodi Computazionali per la Fisica
 '''
@@ -312,7 +312,7 @@ def main():
             axs[i].set_xlabel('f [1/days]', fontsize=11)
             axs[i].set_ylabel(r'$|c_k|^2$', fontsize=11)
             axs[i].set_title(source)
-            axs[i].legend(fontsize=13, loc='best')
+            axs[i].legend(loc='best')
             axs[i].grid(True)
             i += 1
         plt.suptitle('Spettri di potenza con fit - Dati mensili')
@@ -333,7 +333,7 @@ def main():
         i = 0
         for source in dcfm_source:
             axs[i].errorbar(df_rand_date[source][date], dcfm_source[source][flux], 
-                          yerr=dcfm_source[source][flux_err], color=colors[i], label=source)
+                          yerr=dcfm_source[source][flux_err], fmt= 'o',  color=colors[i], label=source)
             axs[i].set_xlabel('Julian Date')
             axs[i].set_ylabel('Photon Flux [0.1-100 GeV](photons cm-2 s-1)')
             axs[i].legend(loc='best')
