@@ -1,6 +1,6 @@
 '''
 Gabriele Virdis (gabriele.virdis@studenti.unipg.it)
-h
+
 - Università degli Studi di Perugia
 - Corso di Metodi Computazionali per la Fisica
 '''
