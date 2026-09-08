@@ -49,17 +49,28 @@ Le sigle si leggono in questo modo:
 - `w`: dati settimanali;
 - `m`: dati mensili.
 
-| Opzione | Cosa seleziona | Risultato |
-| --- | --- | --- |
-| `--clw` | Curve di luce settimanali | Apre una figura con quattro pannelli. In ciascun pannello mostra il flusso di fotoni di una sorgente in funzione della data giuliana, con le relative barre di errore. |
-| `--spw` | Spettri di potenza settimanali | Calcola la FFT e lo spettro di potenza di ogni sorgente. Nel terminale riporta il picco principale, la frequenza, il periodo in giorni e anni e il numero di cicli coperti dalle osservazioni. Apre una figura con i quattro spettri e una figura che li confronta. |
-| `--pfw` | Fit degli spettri settimanali | esegue il fit di ogni spettro con la legge di potenza `P(f) = N/f^β`. Stampa nel terminale `N`, `β` e le loro incertezze; mostra inoltre lo spettro e la curva adattata. |
-| `--psw` | Significatività sui dati settimanali | Per ogni sorgente genera 1000 curve sintetiche rimescolando flussi ed errori, senza cambiare i tempi. Confronta il massimo osservato con i massimi sintetici, stampa quanti lo uguagliano o superano e la corrispondente probabilità empirica. Mostra anche gli spettri sintetici e gli istogrammi dei massimi. |
-| `--clm` | Curve di luce mensili | Esegue la stessa visualizzazione di `--clw`, utilizzando però i dati mensili. |
-| `--spm` | Spettri di potenza mensili | Esegue la stessa analisi di `--spw`, utilizzando i dati mensili. |
-| `--pfm` | Fit degli spettri mensili | Esegue lo stesso adattamento di `--pfw`, utilizzando gli spettri mensili. |
-| `--psm` | Significatività sui dati mensili | Esegue la stessa procedura di `--psw`, utilizzando i dati mensili e generando 1000 curve sintetiche per sorgente. |
-| `-h`, `--help` | Guida rapida | Mostra nel terminale l'elenco sintetico delle opzioni e termina il programma senza eseguire l'analisi. |
+### Dati settimanali
+
+- `--clw` mostra le curve di luce delle quattro sorgenti, con il flusso in
+  funzione della data giuliana e le relative barre di errore.
+- `--spw` calcola gli spettri di potenza tramite FFT. Mostra i grafici e stampa
+  frequenza, potenza, periodo e numero di cicli del picco principale.
+- `--pfw` esegue il fit degli spettri con la legge di potenza
+  `P(f) = N/f^β`. Mostra i grafici e stampa `N`, `β` e le loro incertezze.
+- `--psw` genera 1000 curve sintetiche per sorgente e confronta i loro picchi
+  con quello osservato. Mostra gli spettri e gli istogrammi e stampa la
+  probabilità empirica.
+
+### Dati mensili
+
+- `--clm` mostra le curve di luce mensili.
+- `--spm` calcola e analizza gli spettri di potenza mensili.
+- `--pfm` esegue il fit degli spettri mensili.
+- `--psm` valuta la significatività sui dati mensili generando 1000 curve
+  sintetiche per sorgente.
+
+Per visualizzare l'elenco sintetico delle opzioni nel terminale, usare `-h`
+oppure `--help`.
 
 ## Dati e risultati
 
@@ -74,6 +85,4 @@ I valori ottenuti sono raccolti separatamente in:
 
 - [`risultati/risultati_settimanali.txt`](risultati/risultati_settimanali.txt);
 - [`risultati/risultati_mensili.txt`](risultati/risultati_mensili.txt).
-
-
 
