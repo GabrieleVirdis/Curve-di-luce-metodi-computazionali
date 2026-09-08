@@ -9,7 +9,7 @@ dei picchi mediante curve sintetiche.
 
 ## Clonazione della repository
 
-Per ottenere una copia completa della repository, copiare e incollare nel
+Per ottenere una copia della repository, copiare e incollare nel
 terminale questo comando:
 
 ```bash
@@ -57,7 +57,7 @@ Le sigle si leggono in questo modo:
   `P(f) = N/f^β`. Mostra i grafici e stampa `N`, `β` e le loro incertezze.
 - `--psw` genera 1000 curve sintetiche per sorgente e confronta i loro picchi
   con quello osservato. Mostra gli spettri e gli istogrammi e stampa la
-  probabilità empirica.
+  probabilità.
 
 ### Dati mensili
 
