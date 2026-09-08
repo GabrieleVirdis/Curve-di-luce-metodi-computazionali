@@ -106,15 +106,14 @@ def main():
 
     number_synthetic_curves = 1000 # Numero di curve sintetiche da generare per ogni sorgente
 
-
 # ANALISI SETTIMANALE ------------------------------------------
 
-    # Dizionario sorgenti settimanali con i link ai file CSV
+    # Dizionario sorgenti settimanali con i percorsi dei file CSV locali
     weekly_source_files = {
-        '4FGL_J1104.4+3812': 'https://raw.githubusercontent.com/GabrieleVirdis/Curve-di-luce-metodi-computazionali/main/Dati/4FGL_J1104.4+3812_weekly_2_20_2025.csv',
-        '4FGL_J1256.1-0547': 'https://raw.githubusercontent.com/GabrieleVirdis/Curve-di-luce-metodi-computazionali/main/Dati/4FGL_J1256.1-0547_weekly_2_20_2025.csv',
-        '4FGL_J1555.7+1111': 'https://raw.githubusercontent.com/GabrieleVirdis/Curve-di-luce-metodi-computazionali/main/Dati/4FGL_J1555.7+1111_weekly_2_20_2025.csv',
-        '4FGL_J2253.9+1609': 'https://raw.githubusercontent.com/GabrieleVirdis/Curve-di-luce-metodi-computazionali/main/Dati/4FGL_J2253.9+1609_weekly_2_20_2025.csv',
+        '4FGL_J1104.4+3812': 'data/4FGL_J1104.4+3812_weekly_2_20_2025.csv',
+        '4FGL_J1256.1-0547': 'data/4FGL_J1256.1-0547_weekly_2_20_2025.csv',
+        '4FGL_J1555.7+1111': 'data/4FGL_J1555.7+1111_weekly_2_20_2025.csv',
+        '4FGL_J2253.9+1609': 'data/4FGL_J2253.9+1609_weekly_2_20_2025.csv',
     }
 
     # Trasformazione dei dati settimanali in DataFrame e gestione dei limiti superiori    
@@ -332,12 +331,12 @@ def main():
 
 # ANALISI MENSILE ------------------------------------------
 
-    # Dizionario sorgenti mensili con i link ai file CSV
+    # Dizionario sorgenti mensili con i percorsi dei file CSV locali
     monthly_source_files = {
-        '4FGL_J1104.4+3812': 'https://raw.githubusercontent.com/GabrieleVirdis/Curve-di-luce-metodi-computazionali/main/Dati/4FGL_J1104.4+3812_monthly_2_20_2025.csv',
-        '4FGL_J1256.1-0547': 'https://raw.githubusercontent.com/GabrieleVirdis/Curve-di-luce-metodi-computazionali/main/Dati/4FGL_J1256.1-0547_monthly_2_20_2025.csv',
-        '4FGL_J1555.7+1111': 'https://raw.githubusercontent.com/GabrieleVirdis/Curve-di-luce-metodi-computazionali/main/Dati/4FGL_J1555.7+1111_monthly_2_20_2025.csv',
-        '4FGL_J2253.9+1609': 'https://raw.githubusercontent.com/GabrieleVirdis/Curve-di-luce-metodi-computazionali/main/Dati/4FGL_J2253.9+1609_monthly_2_20_2025.csv',
+        '4FGL_J1104.4+3812': 'data/4FGL_J1104.4+3812_monthly_2_20_2025.csv',
+        '4FGL_J1256.1-0547': 'data/4FGL_J1256.1-0547_monthly_2_20_2025.csv',
+        '4FGL_J1555.7+1111': 'data/4FGL_J1555.7+1111_monthly_2_20_2025.csv',
+        '4FGL_J2253.9+1609': 'data/4FGL_J2253.9+1609_monthly_2_20_2025.csv',
     }
 
     # Trasformazione dei dati mensili in DataFrame e gestione dei limiti superiori
