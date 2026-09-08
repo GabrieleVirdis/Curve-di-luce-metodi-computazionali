@@ -29,8 +29,9 @@ I CSV necessari sono inclusi nella cartella `Dati/`.
 Per eseguire il codice, dalla cartella principale della repository usare:
 
 ```bash
-python3 curve_di_luce.py --option
+python3 curve_di_luce.py --help
 ```
+permette di visualizzare l'elenco sintetico delle opzioni possibili.
 
 ## Opzioni disponibili
 
@@ -66,9 +67,6 @@ Le sigle si leggono in questo modo:
 - `--pfm` esegue il fit degli spettri mensili.
 - `--psm` valuta la significatività sui dati mensili generando 1000 curve
   sintetiche per sorgente.
-
-Per visualizzare l'elenco sintetico delle opzioni nel terminale, usare `-h`
-oppure `--help`.
 
 ## Dati e risultati
 
