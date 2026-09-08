@@ -74,7 +74,7 @@ def genera_curve_sintetiche(source_data, flux, flux_err, number_synthetic_curves
 def parse_arguments():
 
     parser = argparse.ArgumentParser(description='Grafici delle curve di luce e degli spettri di potenza',
-                                     usage='python3 curve_di_luce.py --option')
+                                     usage='python3 Curve_di_luce.py --option')
 
     # Settimanali
     parser.add_argument('--clw',    action='store_true',  help='Mostra le curve di luce settimanali')
