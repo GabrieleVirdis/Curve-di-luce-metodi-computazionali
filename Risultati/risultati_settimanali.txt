@@ -1,0 +1,46 @@
+RISULTATI NUMERICI SETTIMANALI
+=============================
+
+Comando utilizzato:
+
+python3 src/curve_di_luce.py --spw --pfw --psw
+
+La componente a frequenza zero e il primo bin positivo sono esclusi dalla
+ricerca dei picchi, dall'adattamento e dal confronto con gli spettri sintetici.
+
+
+PICCHI DELLO SPETTRO DI POTENZA
+-------------------------------
+
+Sorgente              Frequenza [giorni^-1]   Potenza massima   Periodo [giorni]   Periodo [anni]   Cicli osservati
+4FGL_J1104.4+3812             3.36e-04             1.99e-10          2975.00              8.15             2.03
+4FGL_J1256.1-0547             8.37e-04             1.76e-08          1194.20              3.27             5.05
+4FGL_J1555.7+1111             1.34e-03             3.00e-11           747.25              2.05             8.07
+4FGL_J2253.9+1609             5.02e-04             2.03e-07          1992.67              5.46             3.03
+
+
+FIT P(f) = N / f^beta
+------------------------------
+
+Sorgente                         N                sigma_N        beta   sigma_beta
+4FGL_J1104.4+3812             1.47e-13             3.14e-14      0.87      0.03
+4FGL_J1256.1-0547             2.25e-11             4.61e-12      0.80      0.03
+4FGL_J1555.7+1111             7.70e-14             2.62e-14      0.51      0.06
+4FGL_J2253.9+1609             1.42e-10             2.85e-11      0.87      0.03
+
+
+CONFRONTO CON LE CURVE SINTETICHE
+---------------------------------
+
+Sorgente              Potenza massima reale   Superamenti   Curve sintetiche   Probabilita'
+4FGL_J1104.4+3812             1.99e-10             0              1000                 0.0%
+4FGL_J1256.1-0547             1.76e-08             0              1000                 0.0%
+4FGL_J1555.7+1111             3.00e-11             0              1000                 0.0%
+4FGL_J2253.9+1609             2.03e-07             0              1000                 0.0%
+
+
+NOTA SULLA SIGNIFICATIVITA'
+---------------------------
+
+Il valore 0.0% indica che nessuna delle 1000 curve sintetiche ha prodotto un
+massimo almeno pari a quello reale. 
