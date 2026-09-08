@@ -24,7 +24,7 @@ cd Curve-di-luce-metodi-computazionali
 
 ## Esecuzione
 
-I CSV necessari sono inclusi nella cartella `data/`. 
+I CSV necessari sono inclusi nella cartella `Dati/`. 
 
 Le analisi di significatività possono richiedere più tempo perché generano 1000 curve sintetiche per ogni sorgente.
 
