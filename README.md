@@ -29,7 +29,7 @@ I CSV necessari sono inclusi nella cartella `Dati/`.
 Per eseguire il codice, dalla cartella principale della repository usare:
 
 ```bash
-python3 curve_di_luce.py --help
+python3 Curve_di_luce.py --help
 ```
 permette di visualizzare l'elenco sintetico delle opzioni possibili.
 
