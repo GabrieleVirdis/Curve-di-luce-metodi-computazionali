@@ -1,9 +1,6 @@
 RISULTATI NUMERICI MENSILI
 ==========================
 
-La componente a frequenza zero e il primo bin positivo sono esclusi dalla
-ricerca dei picchi, dall'adattamento e dal confronto con gli spettri sintetici.
-
 PICCHI DELLO SPETTRO DI POTENZA
 -------------------------------
 
