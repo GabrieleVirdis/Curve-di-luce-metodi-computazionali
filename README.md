@@ -26,8 +26,6 @@ cd Curve-di-luce-metodi-computazionali
 
 I CSV necessari sono inclusi nella cartella `Dati/`. 
 
-Le analisi di significatività possono richiedere più tempo perché generano 1000 curve sintetiche per ogni sorgente.
-
 Per eseguire il codice, dalla cartella principale della repository usare:
 
 ```bash
@@ -44,7 +42,7 @@ Le sigle si leggono in questo modo:
 
 - `cl`: curva di luce;
 - `sp`: spettro di potenza e ricerca della periodicità;
-- `pf`: *fit* dello spettro di potenza;
+- `pf`: fit dello spettro di potenza;
 - `ps`: spettri sintetici e significatività del picco;
 - `w`: dati settimanali;
 - `m`: dati mensili.
@@ -78,11 +76,10 @@ Lo script stampa i risultati numerici nel terminale e mostra i grafici
 corrispondenti alle opzioni selezionate. 
 Le figure prodotte per il progetto sono organizzate in:
 
-- [`grafici/settimanale/`](grafici/settimanale/) per l'analisi settimanale;
-- [`grafici/mensile/`](grafici/mensile/) per l'analisi mensile.
+- [`Grafici/settimanale/`](Grafici/settimanale/) per l'analisi settimanale;
+- [`Grafici/mensile/`](Grafici/mensile/) per l'analisi mensile.
 
 I valori ottenuti sono raccolti separatamente in:
 
-- [`risultati/risultati_settimanali.txt`](risultati/risultati_settimanali.txt);
-- [`risultati/risultati_mensili.txt`](risultati/risultati_mensili.txt).
-
+- [`Risultati/risultati_settimanali.txt`](Risultati/risultati_settimanali.txt);
+- [`Risultati/risultati_mensili.txt`](Risultati/risultati_mensili.txt).
