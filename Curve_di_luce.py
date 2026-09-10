@@ -16,23 +16,33 @@ from scipy import fft, optimize
 
 # Definizione delle funzioni
 def fit_potenza(frequencies, N, beta):
-    """ Funzione per calcolare il fit dello Spettro Potenza
+    """
+    Funzione che descrive lo spettro di potenza in funzione della frequenza
 
-    Permette di determinare i diversi tipi di rumore (bianco, rosa, rosso) in base al valore di beta.
+    Parametri
+    -----------
+        frequencies: frequenze dello spettro
+        N:           fattore di normalizzazione
+        beta:        esponente della dipendenza dalla frequenza
 
-    frequencies : frequenze
-    N    : normalizzazione
-    beta : esponente per dipendenza dalla frequenza
-
+    Restituisce
+    -----------
+        N/frequencies**beta
     """
     return N/frequencies**beta
 
 def trova_picco_spettro(frequencies, power):
-    """Funzione per trovare il picco massimo dello spettro di potenza e calcolare il periodo corrispondente
-    
-    frequencies : frequenze
-    power : potenza (|C_k|^2)
+    """
+    Funzione che trova il picco massimo dello spettro di potenza e il periodo corrispondente
 
+    Parametri
+    -----------
+        frequencies: frequenze dello spettro
+        power:       potenze associate alle frequenze (|C_k|^2)
+
+    Restituisce
+    -----------
+        frequenza, potenza e periodo corrispondenti al picco massimo
     """
 
     max_power = np.max(power)
@@ -42,15 +52,20 @@ def trova_picco_spettro(frequencies, power):
     return max_frequencies, max_power, max_period
 
 
-def genera_curve_sintetiche(source_data, flux, flux_err, number_synthetic_curves):
-    """Funzione che genera curve sintetiche per ogni sorgente 
-    
-    Riordina casualmente i flussi e gli errori delle curve di luce originali mantenendo i valori temporali invariati
-    
-    source_data : dizionario contenente i dati elle sorgenti
-    flux : nome della colonna del flusso
-    flux_err : nome della colonna dell'errore del flusso
-    number_synthetic_curves : numero di curve sintetiche da generare
+def genera_curve_sintetiche(source_data, flux, flux_err, number_synthetic_curves=1000):
+    """
+    Funzione che genera 1000 curve di luce sintetiche per ogni sorgente riordinando casualmente flussi ed errori
+
+    Parametri
+    -----------
+        source_data:             dizionario contenente i dati delle sorgenti
+        flux:                    nome della colonna del flusso
+        flux_err:                nome della colonna dell'errore del flusso
+        number_synthetic_curves: numero di curve sintetiche da generare
+
+    Restituisce
+    -----------
+        dizionario delle curve di luce sintetiche per ogni sorgente
     """
 
     np.random.seed(1717) # Fissa il seed per generare numeri casuali
@@ -72,7 +87,6 @@ def genera_curve_sintetiche(source_data, flux, flux_err, number_synthetic_curves
 
 
 def parse_arguments():
-
     parser = argparse.ArgumentParser(description='Grafici delle curve di luce e degli spettri di potenza',
                                      usage='python3 Curve_di_luce.py --option')
 
@@ -92,6 +106,17 @@ def parse_arguments():
 
 
 def main():
+    """
+    Funzione principale che esegue l'analisi delle curve di luce e degli spettri di potenza
+
+    Parametri
+    -----------
+        Nessuno
+
+    Restituisce
+    -----------
+        Nessun valore
+    """
   
     args = parse_arguments()
 
@@ -103,8 +128,6 @@ def main():
     # Definizione dei colori dei grafici e dei fit
     colors = ['darkgreen', 'darkred', 'darkblue', 'darkorange']
     fit_colors = ['lime', 'red', 'cyan', 'gold']
-
-    number_synthetic_curves = 1000 # Numero di curve sintetiche da generare per ogni sorgente
 
 # ANALISI SETTIMANALE ------------------------------------------
 
