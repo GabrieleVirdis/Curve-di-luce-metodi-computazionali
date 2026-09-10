@@ -106,17 +106,6 @@ def parse_arguments():
 
 
 def main():
-    """
-    Funzione principale che esegue l'analisi delle curve di luce e degli spettri di potenza
-
-    Parametri
-    -----------
-        Nessuno
-
-    Restituisce
-    -----------
-        Nessun valore
-    """
   
     args = parse_arguments()
 
