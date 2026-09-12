@@ -109,6 +109,9 @@ def main():
   
     args = parse_arguments()
 
+    # Numero di curve sintetiche generate
+    number_synthetic_curves = 1000
+
     # Definizione delle colonne
     flux = 'Photon Flux [0.1-100 GeV](photons cm-2 s-1)'
     flux_err = 'Photon Flux Error(photons cm-2 s-1)'
@@ -211,7 +214,7 @@ def main():
 
         for source in weekly_source_data:
             tmp_len = len(weekly_source_data[source]['c']) // 2
-            plt.plot(weekly_source_data[source]['freq'][:tmp_len], np.absolute(weekly_source_data[source]['c'][:tmp_len]) ** 2,
+            plt.plot(weekly_source_data[source]['freq'][1:tmp_len], np.absolute(weekly_source_data[source]['c'][1:tmp_len]) ** 2,
                 color=colors[i], label=source)
             i += 1
 
@@ -434,7 +437,7 @@ def main():
 
         for source in monthly_source_data:
             tmp_len = len(monthly_source_data[source]['c']) // 2
-            plt.plot(monthly_source_data[source]['freq'][:tmp_len], np.absolute(monthly_source_data[source]['c'][:tmp_len]) ** 2,
+            plt.plot(monthly_source_data[source]['freq'][1:tmp_len], np.absolute(monthly_source_data[source]['c'][1:tmp_len]) ** 2,
                 color=colors[i], label=source)
             i += 1
 
