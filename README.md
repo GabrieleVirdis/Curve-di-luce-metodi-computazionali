@@ -3,8 +3,8 @@
 Progetto del corso di **Metodi Computazionali per la Fisica**.
 
 Lo script analizza le curve di luce settimanali e mensili di quattro blazar:
-mostra le curve di luce, calcola gli spettri di potenza tramite FFT, cerca
-possibili periodicità, adatta gli spettri con una legge di potenza e valuta la significatività
+mostra le curve di luce, calcola gli spettri di potenza tramite fft, cerca
+possibili periodicità, esegue il fit dello spettro di potenza e valuta la significatività
 dei picchi mediante curve sintetiche.
 
 ## Clonazione della repository
@@ -52,7 +52,7 @@ Le sigle si leggono in questo modo:
 
 - `--clw` mostra le curve di luce delle quattro sorgenti, con il flusso in
   funzione della data giuliana e le relative barre di errore.
-- `--spw` calcola gli spettri di potenza tramite FFT. Mostra i grafici e stampa
+- `--spw` calcola gli spettri di potenza tramite fft. Mostra i grafici e stampa
   frequenza, potenza, periodo e numero di cicli del picco principale.
 - `--pfw` esegue il fit degli spettri con la legge di potenza
   `P(f) = N/f^β`. Mostra i grafici e stampa `N`, `β` e le loro incertezze.
