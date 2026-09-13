@@ -214,7 +214,7 @@ def main():
 
         for source in weekly_source_data:
             tmp_len = len(weekly_source_data[source]['c']) // 2
-            plt.plot(weekly_source_data[source]['freq'][1:tmp_len], np.absolute(weekly_source_data[source]['c'][1:tmp_len]) ** 2,
+            plt.plot(weekly_source_data[source]['freq'][2:tmp_len], np.absolute(weekly_source_data[source]['c'][2:tmp_len]) ** 2,
                 color=colors[i], label=source)
             i += 1
 
@@ -403,7 +403,7 @@ def main():
 
     # Analisi dei picchi degli spettri di potenza mensili
         for source in monthly_source_data:
-            # La ricerca del picco esclude f=0, il primo bin positivo e le frequenze negative
+            # La ricerca del picco esclude f=0, la prima componente e le frequenze negative
             tmp_len = len(monthly_source_data[source]['c']) // 2
             frequencies_m = monthly_source_data[source]['freq'][2:tmp_len]
             powers_m = np.absolute(monthly_source_data[source]['c'][2:tmp_len]) ** 2
@@ -437,7 +437,7 @@ def main():
 
         for source in monthly_source_data:
             tmp_len = len(monthly_source_data[source]['c']) // 2
-            plt.plot(monthly_source_data[source]['freq'][1:tmp_len], np.absolute(monthly_source_data[source]['c'][1:tmp_len]) ** 2,
+            plt.plot(monthly_source_data[source]['freq'][2:tmp_len], np.absolute(monthly_source_data[source]['c'][2:tmp_len]) ** 2,
                 color=colors[i], label=source)
             i += 1
 
