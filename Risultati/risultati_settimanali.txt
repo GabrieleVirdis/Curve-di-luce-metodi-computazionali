@@ -1,5 +1,9 @@
 RISULTATI NUMERICI SETTIMANALI
 =============================
+Osservazione: Nell’analisi dello spettro di potenza sono stati esclusi la prima e la seconda frequenza calcolata con la fft.
+La prima componente (f=0) rappresenta la parte continua del segnale, legata al valore medio del flusso, e non contiene quindi informazioni sulla periodicità. 
+La prima componente corrisponde invece a un periodo confrontabile con l’intera durata dell’osservazione: rappresenta quindi una variazione osservata per circa un solo ciclo.
+L’analisi è stata pertanto effettuata a partire dalla seconda componente, che corrisponde a variazioni osservate per almeno circa due cicli.
 
 PICCHI DELLO SPETTRO DI POTENZA
 -------------------------------
