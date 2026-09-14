@@ -24,20 +24,18 @@ cd Curve-di-luce-metodi-computazionali
 
 ## Esecuzione
 
-I CSV necessari sono inclusi nella cartella `Dati/`. 
+I csv necessari sono inclusi nella cartella `Dati/`. 
 
 Per eseguire il codice, dalla cartella principale della repository usare:
 
 ```bash
 python3 Curve_di_luce.py --help
 ```
-permette di visualizzare l'elenco sintetico delle opzioni possibili.
+permette di visualizzare l'elenco delle opzioni possibili.
 
 ## Opzioni disponibili
 
-Le opzioni stabiliscono quali parti dell'analisi eseguire. Ogni opzione si
-applica a tutte e quattro le sorgenti e può essere selezionata da sola oppure
-insieme ad altre opzioni.
+Le opzioni stabiliscono quali parti dell'analisi eseguire.
 
 Le sigle si leggono in questo modo:
 
