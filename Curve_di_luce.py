@@ -197,6 +197,8 @@ def main():
 
             # Grafici in scala log-log degli spettri di potenza settimanali
             axs[i].plot(frequencies_w, powers_w, color=colors[i], label=source)
+            axs[i].axvline(max_frequency, color='black', linestyle='--',
+                           label='Periodo: {:.2f} giorni'.format(max_period))
             axs[i].set_xscale('log')
             axs[i].set_yscale('log')
             axs[i].set_xlabel('f [1/d]')
@@ -214,8 +216,9 @@ def main():
 
         for source in weekly_source_data:
             tmp_len = len(weekly_source_data[source]['c']) // 2
-            plt.plot(weekly_source_data[source]['freq'][2:tmp_len], np.absolute(weekly_source_data[source]['c'][2:tmp_len]) ** 2,
-                color=colors[i], label=source)
+            frequencies_w = weekly_source_data[source]['freq'][2:tmp_len]
+            powers_w = np.absolute(weekly_source_data[source]['c'][2:tmp_len]) ** 2
+            plt.plot(frequencies_w, powers_w, color=colors[i], label=source)
             i += 1
 
         plt.xscale('log')
@@ -238,18 +241,20 @@ def main():
             tmp_len = len(weekly_source_data[source]['c']) // 2
             f = weekly_source_data[source]['freq'][2:tmp_len]
             psw = np.absolute(weekly_source_data[source]['c'][2:tmp_len]) ** 2
+            max_frequency, max_power, max_period = trova_picco_spettro(f, psw)
             pv, pc = optimize.curve_fit(fit_potenza, f, psw, p0=[1e-16, 1])
 
             print('\nSorgente: {}\nN = {:.2e} ± {:.2e}\n' 'β = {:.2f} ± {:.2f}'.format(source, pv[0], np.sqrt(pc[0, 0]),
                     pv[1], np.sqrt(pc[1, 1])))
 
-            axs[i].plot(f, psw, color=colors[i], label='Data')
+            axs[i].plot(f, psw, color=colors[i], label=source)
             axs[i].plot(f, fit_potenza(f, pv[0], pv[1]), color=fit_colors[i], label=f'Fit: β = {pv[1]:.2f} ± {np.sqrt(pc[1, 1]):.2f}')
+            axs[i].axvline(max_frequency, color='black', linestyle='--',
+                           label='Periodo: {:.2f} giorni'.format(max_period))
             axs[i].set_xscale('log')
             axs[i].set_yscale('log')
             axs[i].set_xlabel('f [1/d]')
             axs[i].set_ylabel(r'$|c_k|^2$')
-            axs[i].set_title(source)
             axs[i].legend(fontsize=13, loc='best')
             axs[i].grid(True)
             i += 1
@@ -420,6 +425,8 @@ def main():
 
             # Grafici in scala log-log degli spettri di potenza mensili
             axs[i].plot(frequencies_m, powers_m, color=colors[i], label=source)
+            axs[i].axvline(max_frequency, color='black', linestyle='--',
+                           label='Periodo: {:.2f} giorni'.format(max_period))
             axs[i].set_xscale('log')
             axs[i].set_yscale('log')
             axs[i].set_xlabel('f [1/d]')
@@ -437,8 +444,9 @@ def main():
 
         for source in monthly_source_data:
             tmp_len = len(monthly_source_data[source]['c']) // 2
-            plt.plot(monthly_source_data[source]['freq'][2:tmp_len], np.absolute(monthly_source_data[source]['c'][2:tmp_len]) ** 2,
-                color=colors[i], label=source)
+            frequencies_m = monthly_source_data[source]['freq'][2:tmp_len]
+            powers_m = np.absolute(monthly_source_data[source]['c'][2:tmp_len]) ** 2
+            plt.plot(frequencies_m, powers_m, color=colors[i], label=source)
             i += 1
 
         plt.xscale('log')
@@ -461,18 +469,20 @@ def main():
             tmp_len = len(monthly_source_data[source]['c']) // 2
             f = monthly_source_data[source]['freq'][2:tmp_len]
             psm = np.absolute(monthly_source_data[source]['c'][2:tmp_len]) ** 2
+            max_frequency, max_power, max_period = trova_picco_spettro(f, psm)
             pv, pc = optimize.curve_fit(fit_potenza, f, psm, p0=[1e-16, 1])
 
             print('\nSorgente: {}\nN = {:.2e} ± {:.2e}\n' 'β = {:.2f} ± {:.2f}'.format(source, pv[0], np.sqrt(pc[0, 0]),
                     pv[1], np.sqrt(pc[1, 1])))
 
-            axs[i].plot(f, psm, color=colors[i], label='Data')
+            axs[i].plot(f, psm, color=colors[i], label=source)
             axs[i].plot(f, fit_potenza(f, pv[0], pv[1]), color=fit_colors[i], label=f'Fit: β = {pv[1]:.2f} ± {np.sqrt(pc[1, 1]):.2f}')
+            axs[i].axvline(max_frequency, color='black', linestyle='--',
+                           label='Periodo: {:.2f} giorni'.format(max_period))
             axs[i].set_xscale('log')
             axs[i].set_yscale('log')
             axs[i].set_xlabel('f [1/d]')
             axs[i].set_ylabel(r'$|c_k|^2$')
-            axs[i].set_title(source)
             axs[i].legend(fontsize=13, loc='best')
             axs[i].grid(True)
             i += 1
