@@ -185,6 +185,8 @@ def main():
             frequencies_w = weekly_source_data[source]['freq'][2:tmp_len]
             powers_w = np.absolute(weekly_source_data[source]['c'][2:tmp_len]) ** 2
             max_frequency, max_power, max_period = trova_picco_spettro(frequencies_w, powers_w)
+            errors_w = weekly_source_data[source]['df'][flux_err].values[2:tmp_len]
+            max_power_error = errors_w[powers_w == max_power][0]
             period_years = max_period / 365 # Conversione del periodo da giorni ad anni
 
             # Calcolo del tempo di osservazione e del numero di cicli osservati durante il periodo di misurazione
@@ -192,8 +194,8 @@ def main():
             number_periods = observation_time / max_period
 
             # Print dei risultati 
-            print('\nSorgente: {}\nFrequenza massima: {:.2e} 1/giorni\n' 'Potenza massima: {:.2e}\nPeriodo: {:.2f} giorni ({:.2f} anni)\n'
-                  'Numero di periodi nel tempo di misurazione: {:.2f}'.format(source, max_frequency, max_power, max_period, period_years, number_periods))
+            print('\nSorgente: {}\nFrequenza massima: {:.2e} 1/giorni\n' 'Potenza massima: {:.2e} +/- {:.2e}\nPeriodo: {:.2f} giorni ({:.2f} anni)\n'
+                  'Numero di periodi nel tempo di misurazione: {:.2f}'.format(source, max_frequency, max_power, max_power_error, max_period, period_years, number_periods))
 
             # Grafici in scala log-log degli spettri di potenza settimanali
             axs[i].plot(frequencies_w, powers_w, color=colors[i], label=source)
@@ -201,7 +203,7 @@ def main():
                            label='Periodo: {:.2f} giorni'.format(max_period))
             axs[i].set_xscale('log')
             axs[i].set_yscale('log')
-            axs[i].set_xlabel('f [1/d]')
+            axs[i].set_xlabel(r'Frequenza [giorni$^{-1}$]')
             axs[i].set_ylabel(r'$|c_k|^2$')
             axs[i].legend(loc='best')
             i += 1
@@ -223,7 +225,7 @@ def main():
 
         plt.xscale('log')
         plt.yscale('log')
-        plt.xlabel('f [1/d]')
+        plt.xlabel(r'Frequenza [giorni$^{-1}$]')
         plt.ylabel(r'$|c_k|^2$')
         plt.legend(loc='best')
         plt.title('Confronto spettri di potenza settimanali')
@@ -253,7 +255,7 @@ def main():
                            label='Periodo: {:.2f} giorni'.format(max_period))
             axs[i].set_xscale('log')
             axs[i].set_yscale('log')
-            axs[i].set_xlabel('f [1/d]')
+            axs[i].set_xlabel(r'Frequenza [giorni$^{-1}$]')
             axs[i].set_ylabel(r'$|c_k|^2$')
             axs[i].legend(fontsize=13, loc='best')
             axs[i].grid(True)
@@ -302,7 +304,7 @@ def main():
 
             axs[i].set_xscale('log')
             axs[i].set_yscale('log')
-            axs[i].set_xlabel('f [1/d]')
+            axs[i].set_xlabel(r'Frequenza [giorni$^{-1}$]')
             axs[i].set_ylabel(r'$|c_k|^2$')
             axs[i].set_title(f'{number_synthetic_curves} spettri sintetici')
             axs[i].legend(loc='best')
@@ -413,6 +415,8 @@ def main():
             frequencies_m = monthly_source_data[source]['freq'][2:tmp_len]
             powers_m = np.absolute(monthly_source_data[source]['c'][2:tmp_len]) ** 2
             max_frequency, max_power, max_period = trova_picco_spettro(frequencies_m, powers_m)
+            errors_m = monthly_source_data[source]['df'][flux_err].values[2:tmp_len]
+            max_power_error = errors_m[powers_m == max_power][0]
             period_years = max_period / 365 # Conversione del periodo da giorni ad anni
 
             # Calcolo del tempo di osservazione e del numero di cicli osservati durante il periodo di misurazione
@@ -420,8 +424,8 @@ def main():
             number_periods = observation_time / max_period
 
             # Print dei risultati
-            print('\nSorgente: {}\nFrequenza massima: {:.2e} 1/giorni\n' 'Potenza massima: {:.2e}\nPeriodo: {:.2f} giorni ({:.2f} anni)\n'
-                  'Numero di periodi nel tempo di misurazione: {:.2f}'.format(source, max_frequency, max_power, max_period, period_years, number_periods))
+            print('\nSorgente: {}\nFrequenza massima: {:.2e} 1/giorni\n' 'Potenza massima: {:.2e} +/- {:.2e}\nPeriodo: {:.2f} giorni ({:.2f} anni)\n'
+                  'Numero di periodi nel tempo di misurazione: {:.2f}'.format(source, max_frequency, max_power, max_power_error, max_period, period_years, number_periods))
 
             # Grafici in scala log-log degli spettri di potenza mensili
             axs[i].plot(frequencies_m, powers_m, color=colors[i], label=source)
@@ -429,7 +433,7 @@ def main():
                            label='Periodo: {:.2f} giorni'.format(max_period))
             axs[i].set_xscale('log')
             axs[i].set_yscale('log')
-            axs[i].set_xlabel('f [1/d]')
+            axs[i].set_xlabel(r'Frequenza [giorni$^{-1}$]')
             axs[i].set_ylabel(r'$|c_k|^2$')
             axs[i].legend(loc='best')
             i += 1
@@ -451,7 +455,7 @@ def main():
 
         plt.xscale('log')
         plt.yscale('log')
-        plt.xlabel('f [1/d]')
+        plt.xlabel(r'Frequenza [giorni$^{-1}$]')
         plt.ylabel(r'$|c_k|^2$')
         plt.legend(loc='best')
         plt.title('Confronto spettri di potenza mensili')
@@ -481,7 +485,7 @@ def main():
                            label='Periodo: {:.2f} giorni'.format(max_period))
             axs[i].set_xscale('log')
             axs[i].set_yscale('log')
-            axs[i].set_xlabel('f [1/d]')
+            axs[i].set_xlabel(r'Frequenza [giorni$^{-1}$]')
             axs[i].set_ylabel(r'$|c_k|^2$')
             axs[i].legend(fontsize=13, loc='best')
             axs[i].grid(True)
@@ -530,7 +534,7 @@ def main():
 
             axs[i].set_xscale('log')
             axs[i].set_yscale('log')
-            axs[i].set_xlabel('f [1/d]')
+            axs[i].set_xlabel(r'Frequenza [giorni$^{-1}$]')
             axs[i].set_ylabel(r'$|c_k|^2$')
             axs[i].set_title(f'{number_synthetic_curves} spettri sintetici')
             axs[i].legend(loc='best')
