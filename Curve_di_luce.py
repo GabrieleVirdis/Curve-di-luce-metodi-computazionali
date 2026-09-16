@@ -137,7 +137,7 @@ def main():
     # Trasformazione dei dati settimanali in dataFrame e gestione dei limiti superiori
     weekly_source_data = {} # Dizionario vuoto per contenere i dati delle sorgenti settimanali
 
-    for source in weekly_source_files: # Ciclo su tutte le sorgenti per leggere i file CSV e creare i dataFrame
+    for source in weekly_source_files: # Ciclo su tutte le sorgenti per leggere i file csv e creare i dataFrame
         weekly_df = pd.read_csv(weekly_source_files[source])
 
         # Gestione dei limiti superiori
