@@ -142,7 +142,7 @@ def main():
 
         # Gestione dei limiti superiori
         upper_limits = weekly_df[flux_err] == '-' # Maschera booleana per identificare i limiti superiori (dove l'errore è '-')
-        for index in weekly_df.loc[upper_limits].index: # Seleziona gli indici delle righe con limiti superiori e modifica i valori del flusso e dell'errore
+        for index in weekly_df.loc[upper_limits].index: # ciclo sugli indici delle righe con limiti superiori 
             weekly_df.loc[index, flux] = weekly_df.loc[index, flux][1:] # Rimuove il simbolo '<' dal flusso che è il primo carattere della stringa
             weekly_df.loc[index, flux_err] = 0 # Imposta l'errore nullo perchè non è definito per i limiti superiori
 
@@ -158,6 +158,7 @@ def main():
         axs = axs.flatten()
         i = 0
 
+    # Plot delle curve di luce settimanali  
         for source in weekly_source_data:
             axs[i].errorbar(weekly_source_data[source]['df'][date], weekly_source_data[source]['df'][flux], yerr=weekly_source_data[source]['df'][flux_err], 
                             color=colors[i], label=source)
@@ -275,7 +276,7 @@ def main():
 
     # Curve sintetiche e significatività dei picchi settimanali
     if args.psw:
-        synthetic_curves_w = genera_curve_sintetiche(weekly_source_data, flux, flux_err, number_synthetic_curves) # Generazione curve di luce sintetiche
+        synthetic_curves_w = genera_curve_sintetiche(weekly_source_data, flux, flux_err, number_synthetic_curves) # Chiamata della funzione per generare le curve sintetiche settimanali    
 
     # Calcolo degli spettri di potenza sintetici
         synthetic_spectra_w = {} # Dizionario vuoto per contenere gli spettri di potenza sintetici per ogni sorgente
@@ -307,7 +308,7 @@ def main():
         for source in synthetic_spectra_w:
             number = 0
 
-            for spectrum in synthetic_spectra_w[source]:
+            for spectrum in synthetic_spectra_w[source]: # Ciclo su tutti gli spettri di potenza sintetici della sorgente
                 tmp_len = len(spectrum['c']) // 2
                 label = source if number == 0 else None # Solo alla prima curva per evitare duplicati
                 axs[i].plot(spectrum['freq'][2:tmp_len], np.absolute(spectrum['c'][2:tmp_len]) ** 2, alpha=0.01, color=colors[i], label=label)
