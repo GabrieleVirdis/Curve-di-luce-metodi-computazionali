@@ -45,16 +45,16 @@ def trova_picco_spettro(frequencies, power):
         frequenza, potenza e periodo corrispondenti al picco massimo
     """
 
-    max_power = np.max(power)
-    max_frequencies = frequencies[power == max_power][0]
-    max_period = 1 / max_frequencies
+    max_power = np.max(power) # Trova il valore massimo nell'array delle potenze
+    max_frequencies = frequencies[power == max_power][0] # Applica una maschera all'array delle frequenze per trovare la frequenza corrispondente al picco massimo e poi estrae il primo valore     
+    max_period = 1 / max_frequencies # 
 
     return max_frequencies, max_power, max_period
 
 
-def genera_curve_sintetiche(source_data, flux, flux_err, number_synthetic_curves=1000):
+def genera_curve_sintetiche(source_data, flux, flux_err, number_synthetic_curves):
     """
-    Funzione che genera 1000 curve di luce sintetiche per ogni sorgente riordinando casualmente flussi ed errori
+    Funzione che genera curve di luce sintetiche per ogni sorgente riordinando casualmente flussi ed errori
 
     Parametri
     -----------
@@ -68,20 +68,20 @@ def genera_curve_sintetiche(source_data, flux, flux_err, number_synthetic_curves
         dizionario delle curve di luce sintetiche per ogni sorgente
     """
 
-    np.random.seed(1717) # Fissa il seed per generare numeri casuali
+    np.random.seed(1717) # Seed per generare numeri casuali
     synthetic_curves = {} # Dizionario vuoto per contenere le curve sintetiche per ogni sorgente
 
-    for source in source_data: # Ciclo su tutte le sorgenti e crea una lista vuota per ognuna
-        synthetic_curves[source] = []
-        source_df = source_data[source]['df']
+    for source in source_data: # Ciclo su tutte le sorgenti 
+        synthetic_curves[source] = [] # Crea una lista vuota per contenere le curve sintetiche della sorgente 
+        source_df = source_data[source]['df'] # DataFrame della sorgente 
 
         for i in range(number_synthetic_curves): # Ciclo per ripetere l'operazione di rimescolamento per il numero di curve sintetiche 
-            synthetic_curve = source_df.copy()
+            synthetic_curve = source_df.copy() # Copia del dataframe della sorgente per creare una curva sintetica
             order = np.arange(len(synthetic_curve)) # Array che contiene gli indici della curva di luce 
             np.random.shuffle(order) # Rimescola casualmente gli indici 
             synthetic_curve[flux] = source_df[flux].values[order] # Rimescola i valori del flusso in base agli indici rimescolati prima
             synthetic_curve[flux_err] = source_df[flux_err].values[order] # Rimescola i valori dell'errore del flusso in base agli indici rimescolati prima
-            synthetic_curves[source].append(synthetic_curve)
+            synthetic_curves[source].append(synthetic_curve) # Aggiunge la curva sintetica alla lista delle curve sintetiche della sorgente
 
     return synthetic_curves
 
