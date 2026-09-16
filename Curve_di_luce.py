@@ -155,8 +155,8 @@ def main():
         for source in weekly_source_data:
             axs[i].errorbar(weekly_source_data[source]['df'][date], weekly_source_data[source]['df'][flux], yerr=weekly_source_data[source]['df'][flux_err], 
                             color=colors[i], label=source)
-            axs[i].set_xlabel('Julian Date')
-            axs[i].set_ylabel(flux)
+            axs[i].set_xlabel('Data giuliana')
+            axs[i].set_ylabel(r'Flusso [fotoni cm$^{-2}$ s$^{-1}$]')
             axs[i].legend(loc='best')
             i += 1
 
@@ -194,7 +194,7 @@ def main():
             number_periods = observation_time / max_period
 
             # Print dei risultati 
-            print('\nSorgente: {}\nFrequenza massima: {:.2e} 1/giorni\n' 'Potenza massima: {:.2e} +/- {:.2e}\nPeriodo: {:.2f} giorni ({:.2f} anni)\n'
+            print('\nSorgente: {}\nFrequenza massima: {:.2e} 1/giorni\n' 'Potenza massima: {:.2e} ± {:.2e}\nPeriodo: {:.2f} giorni ({:.2f} anni)\n'
                   'Numero di periodi nel tempo di misurazione: {:.2f}'.format(source, max_frequency, max_power, max_power_error, max_period, period_years, number_periods))
 
             # Grafici in scala log-log degli spettri di potenza settimanali
@@ -385,8 +385,8 @@ def main():
         for source in monthly_source_data:
             axs[i].errorbar(monthly_source_data[source]['df'][date], monthly_source_data[source]['df'][flux], yerr=monthly_source_data[source]['df'][flux_err],
                             color=colors[i], label=source)
-            axs[i].set_xlabel('Julian Date')
-            axs[i].set_ylabel(flux)
+            axs[i].set_xlabel('Data giuliana')
+            axs[i].set_ylabel(r'Flusso [fotoni cm$^{-2}$ s$^{-1}$]')
             axs[i].legend(loc='best')
             i += 1
 
@@ -424,7 +424,7 @@ def main():
             number_periods = observation_time / max_period
 
             # Print dei risultati
-            print('\nSorgente: {}\nFrequenza massima: {:.2e} 1/giorni\n' 'Potenza massima: {:.2e} +/- {:.2e}\nPeriodo: {:.2f} giorni ({:.2f} anni)\n'
+            print('\nSorgente: {}\nFrequenza massima: {:.2e} 1/giorni\n' 'Potenza massima: {:.2e} ± {:.2e}\nPeriodo: {:.2f} giorni ({:.2f} anni)\n'
                   'Numero di periodi nel tempo di misurazione: {:.2f}'.format(source, max_frequency, max_power, max_power_error, max_period, period_years, number_periods))
 
             # Grafici in scala log-log degli spettri di potenza mensili

@@ -28,7 +28,7 @@ Sorgente                         N                sigma_N        beta   sigma_be
 CONFRONTO CON LE CURVE SINTETICHE
 ---------------------------------
 
-Sorgente                Potenza massima       Superamenti   Curve sintetiche   Probabilita'
+Sorgente                Potenza massima reale     Superamenti   Curve sintetiche   Probabilita'
 4FGL_J1104.4+3812             1.99e-10             0              1000                 0.0%
 4FGL_J1256.1-0547             1.76e-08             0              1000                 0.0%
 4FGL_J1555.7+1111             3.00e-11             0              1000                 0.0%
