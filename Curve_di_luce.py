@@ -184,7 +184,7 @@ def main():
         axs = axs.flatten()
         i = 0
 
-    # Analisi dei picchi degli spettri di potenza settimanali 
+        # Analisi dei picchi degli spettri di potenza settimanali
         for source in weekly_source_data:
             # La ricerca del picco esclude le prime due componenti di frequenza e le frequenze negative
             tmp_len = len(weekly_source_data[source]['c']) // 2
@@ -266,11 +266,11 @@ def main():
         plt.tight_layout()
         plt.show()
 
-    # Grafici delle curve sintetiche e significatività dei picchi settimanali
+    # Grafici degli spettri sintetici e significatività dei picchi settimanali
     if args.psw:
         synthetic_curves_w = genera_curve_sintetiche(weekly_source_data, flux, flux_err, number_synthetic_curves) # Chiamata della funzione per generare le curve sintetiche settimanali    
 
-    # Calcolo degli spettri di potenza sintetici
+        # Calcolo degli spettri di potenza sintetici
         synthetic_spectra_w = {} # Dizionario vuoto per contenere gli spettri di potenza sintetici per ogni sorgente
         for source in synthetic_curves_w:
             synthetic_spectra_w[source] = [] # Crea una lista vuota per contenere gli spettri di potenza sintetici 
@@ -281,7 +281,7 @@ def main():
 
                 synthetic_spectra_w[source].append({'c': c, 'freq': f} ) # Aggiunta al dizionario 
 
-    # Calcolo della potenza massima per ogni curva sintetica
+        # Calcolo della potenza massima per ogni curva sintetica
         synthetic_max_power_w = {} # Dizionario vuoto per contenere le potenze massime sintetiche per ogni sorgente
         for source in synthetic_spectra_w:
             synthetic_max_power_w[source] = [] # Crea una lista vuota per contenere le potenze massime sintetiche 
@@ -296,7 +296,7 @@ def main():
         axs = axs.flatten()
         i = 0
 
-    # Grafici log-log degli spettri di potenza sintetici settimanali
+        # Grafici log-log degli spettri di potenza sintetici settimanali
         for source in synthetic_spectra_w:
             number = 0
 
@@ -330,18 +330,18 @@ def main():
             real_power = np.absolute(weekly_source_data[source]['c'][2:tmp_len]) ** 2
             real_max_power = trova_picco_spettro(real_frequencies, real_power)[1] # Chiamata della funzione per trovare il picco massimo
 
-        # Confronto tra le potenze massime sintetiche e quella reale
+            # Confronto tra le potenze massime sintetiche e quella reale
             synthetic_max_power = synthetic_max_power_w[source] # Potenze massime sintetiche della sorgente
             number_exceeding = np.sum(synthetic_max_power >= real_max_power) # Conteggio delle potenze massime sintetiche che superano o eguagliano quella reale
             number_synthetic = len(synthetic_max_power) # Conteggio del numero totale di potenze massime sintetiche
             probability_percentage = number_exceeding / number_synthetic * 100 # Calcolo della probabilità di ottenere un picco almeno altrettanto rilevante in percentuale
 
-        # Print dei risultati dell'analisi dei picchi sintetici
+            # Print dei risultati dell'analisi dei picchi sintetici
             print('\nSorgente: {}\nPotenza massima reale: {:.2e}\n' 'Curve sintetiche con un picco almeno altrettanto rilevante: {} su {}\n'
                   'Probabilità di ottenere un picco almeno altrettanto rilevante: {:.1f}%'.format(source, real_max_power, number_exceeding,
                     number_synthetic, probability_percentage))
 
-        # Istogrammi che confrontano i massimi sintetici e della potenza massima reale
+            # Istogrammi che confrontano i massimi sintetici e della potenza massima reale
             axs[i].hist(synthetic_max_power, bins=5, color=colors[i], edgecolor='black', label='Massimi sintetici')
             axs[i].axvline(real_max_power, color='black', linestyle='--', label='Massimo reale')
             axs[i].set_xscale('log')
@@ -414,7 +414,7 @@ def main():
         axs = axs.flatten()
         i = 0
 
-    # Analisi dei picchi degli spettri di potenza mensili
+        # Analisi dei picchi degli spettri di potenza mensili
         for source in monthly_source_data:
             # La ricerca del picco esclude le prime due componenti di frequenza e le frequenze negative
             tmp_len = len(monthly_source_data[source]['c']) // 2
@@ -496,11 +496,11 @@ def main():
         plt.tight_layout()
         plt.show()
 
-    # Grafici delle curve sintetiche e significatività dei picchi mensili
+    # Grafici degli spettri sintetici e significatività dei picchi mensili
     if args.psm:
         synthetic_curves_m = genera_curve_sintetiche(monthly_source_data, flux, flux_err, number_synthetic_curves) # Chiamata della funzione per generare le curve sintetiche mensili
 
-    # Calcolo degli spettri di potenza sintetici
+        # Calcolo degli spettri di potenza sintetici
         synthetic_spectra_m = {} # Dizionario vuoto per contenere gli spettri di potenza sintetici per ogni sorgente
         for source in synthetic_curves_m:
             synthetic_spectra_m[source] = [] # Crea una lista vuota per contenere gli spettri di potenza sintetici
@@ -510,7 +510,7 @@ def main():
                 f = fft.fftfreq(len(c), d=dt)
                 synthetic_spectra_m[source].append({'c': c, 'freq': f} ) # Aggiunta al dizionario
 
-    # Calcolo della potenza massima per ogni curva sintetica
+        # Calcolo della potenza massima per ogni curva sintetica
         synthetic_max_power_m = {} # Dizionario vuoto per contenere le potenze massime sintetiche per ogni sorgente
         for source in synthetic_spectra_m:
             synthetic_max_power_m[source] = [] # Crea una lista vuota per contenere le potenze massime sintetiche
@@ -525,7 +525,7 @@ def main():
         axs = axs.flatten()
         i = 0
 
-    # Grafici log-log degli spettri di potenza sintetici mensili
+        # Grafici log-log degli spettri di potenza sintetici mensili
         for source in synthetic_spectra_m:
             number = 0
 
@@ -546,7 +546,7 @@ def main():
         plt.tight_layout()
         plt.show()
 
-        # Confronto tra le potenze massime sintetiche e quella reale
+            # Confronto tra le potenze massime sintetiche e quella reale
         fig, axs = plt.subplots(2, 2, figsize=(14, 10))
         axs = axs.flatten()
         i = 0
@@ -565,14 +565,14 @@ def main():
             number_synthetic = len(synthetic_max_power) # Conteggio del numero totale di potenze massime sintetiche
             probability_percentage = number_exceeding / number_synthetic * 100 # Calcolo della probabilità di ottenere un picco almeno altrettanto rilevante in percentuale
 
-        # Print dei risultati dell'analisi dei picchi sintetici
+            # Print dei risultati dell'analisi dei picchi sintetici
             print('\nSorgente: {}\nPotenza massima reale: {:.2e}\n'
                   'Curve sintetiche con un picco almeno altrettanto rilevante: {} su {}\n'
                   'Probabilità di ottenere un picco almeno altrettanto rilevante: {:.1f}%'.format(
                       source, real_max_power, number_exceeding,
                       number_synthetic, probability_percentage))
 
-        # Istogrammi che confrontano i massimi sintetici e della potenza massima reale
+            # Istogrammi che confrontano i massimi sintetici e della potenza massima reale
             axs[i].hist(synthetic_max_power, bins=5, color=colors[i], edgecolor='black', label='Massimi sintetici')
             axs[i].axvline(real_max_power, color='black', linestyle='--', label='Massimo reale')
             axs[i].set_xscale('log')
