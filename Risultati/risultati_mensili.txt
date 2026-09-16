@@ -8,11 +8,11 @@ L’analisi è stata pertanto effettuata a partire dalla seconda componente, che
 PICCHI DELLO SPETTRO DI POTENZA
 -------------------------------
 
-Sorgente              Frequenza [giorni^-1]   Potenza massima   sigma_P     Periodo [giorni]   Periodo [anni]   Cicli osservati
-4FGL_J1104.4+3812             3.32e-04             1.12e-11      1.00e-08        3015.00              8.26             1.99
-4FGL_J1256.1-0547             6.63e-04             1.10e-09      3.00e-08        1507.50              4.13             3.98
-4FGL_J1555.7+1111             1.33e-03             1.56e-12      5.40e-09         750.00              2.05             8.00
-4FGL_J2253.9+1609             4.98e-04             1.12e-08      3.00e-08        2010.00              5.51             2.99
+Sorgente              Frequenza [giorni^-1]   Potenza massima   Periodo [giorni]   Periodo [anni]   Cicli osservati
+4FGL_J1104.4+3812             3.32e-04             1.12e-11        3015.00              8.26             1.99
+4FGL_J1256.1-0547             6.63e-04             1.10e-09        1507.50              4.13             3.98
+4FGL_J1555.7+1111             1.33e-03             1.56e-12         750.00              2.05             8.00
+4FGL_J2253.9+1609             4.98e-04             1.12e-08        2010.00              5.51             2.99
 
 
 FIT P(f) = N / f^beta

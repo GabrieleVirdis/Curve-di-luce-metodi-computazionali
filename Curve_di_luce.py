@@ -192,18 +192,14 @@ def main():
             powers_w = np.absolute(weekly_source_data[source]['c'][2:tmp_len]) ** 2
             max_frequency, max_power, max_period = trova_picco_spettro(frequencies_w, powers_w) # Chiamata della funzione per trovare il picco massimo
 
-            # Calcolo dell'errore del picco massimo
-            errors_w = weekly_source_data[source]['df'][flux_err].values[2:tmp_len]
-            max_power_error = errors_w[powers_w == max_power][0] # Individua l'errore corrispondente al picco massimo applicando una maschera
-
             # Calcolo del tempo di osservazione e del numero di cicli osservati durante il periodo di misurazione
             period_years = max_period / 365 # Conversione del periodo da giorni ad anni
             observation_time = (weekly_source_data[source]['df'][date].iloc[-1] - weekly_source_data[source]['df'][date].iloc[0]) # Tempo di misurazione totale
             number_periods = observation_time / max_period # Calcolo del numero di cicli osservati durante il periodo di misurazione
 
             # Print dei risultati 
-            print('\nSorgente: {}\nFrequenza massima: {:.2e} 1/giorni\n' 'Potenza massima: {:.2e} ± {:.2e}\nPeriodo: {:.2f} giorni ({:.2f} anni)\n'
-                  'Numero di periodi nel tempo di misurazione: {:.2f}'.format(source, max_frequency, max_power, max_power_error, max_period, period_years, number_periods))
+            print('\nSorgente: {}\nFrequenza massima: {:.2e} 1/giorni\n' 'Potenza massima: {:.2e}\nPeriodo: {:.2f} giorni ({:.2f} anni)\n'
+                  'Numero di periodi nel tempo di misurazione: {:.2f}'.format(source, max_frequency, max_power, max_period, period_years, number_periods))
 
             axs[i].plot(frequencies_w, powers_w, color=colors[i], label=source)
             axs[i].axvline(max_frequency, color='black', linestyle='--', label='Periodo: {:.2f} giorni'.format(max_period))
@@ -426,18 +422,14 @@ def main():
             powers_m = np.absolute(monthly_source_data[source]['c'][2:tmp_len]) ** 2
             max_frequency, max_power, max_period = trova_picco_spettro(frequencies_m, powers_m) # Chiamata della funzione per trovare il picco massimo
 
-            # Calcolo dell'errore del picco massimo
-            errors_m = monthly_source_data[source]['df'][flux_err].values[2:tmp_len]
-            max_power_error = errors_m[powers_m == max_power][0] # Individua l'errore corrispondente al picco massimo applicando una maschera
-
             # Calcolo del tempo di osservazione e del numero di cicli osservati durante il periodo di misurazione
             period_years = max_period / 365 # Conversione del periodo da giorni ad anni
             observation_time = (monthly_source_data[source]['df'][date].iloc[-1] - monthly_source_data[source]['df'][date].iloc[0]) # Tempo di misurazione totale
             number_periods = observation_time / max_period # Calcolo del numero di cicli osservati durante il periodo di misurazione
 
             # Print dei risultati
-            print('\nSorgente: {}\nFrequenza massima: {:.2e} 1/giorni\n' 'Potenza massima: {:.2e} ± {:.2e}\nPeriodo: {:.2f} giorni ({:.2f} anni)\n'
-                  'Numero di periodi nel tempo di misurazione: {:.2f}'.format(source, max_frequency, max_power, max_power_error, max_period, period_years, number_periods))
+            print('\nSorgente: {}\nFrequenza massima: {:.2e} 1/giorni\n' 'Potenza massima: {:.2e}\nPeriodo: {:.2f} giorni ({:.2f} anni)\n'
+                  'Numero di periodi nel tempo di misurazione: {:.2f}'.format(source, max_frequency, max_power, max_period, period_years, number_periods))
 
             axs[i].plot(frequencies_m, powers_m, color=colors[i], label=source)
             axs[i].axvline(max_frequency, color='black', linestyle='--', label='Periodo: {:.2f} giorni'.format(max_period))
