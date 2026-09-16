@@ -139,6 +139,7 @@ def main():
 
     for source in weekly_source_files: # Ciclo su tutte le sorgenti per leggere i file csv e creare i dataFrame
         weekly_df = pd.read_csv(weekly_source_files[source])
+        weekly_source_data[source] = {} # Aggiunta della sorgente al dizionario
 
         # Gestione dei limiti superiori
         upper_limits = weekly_df[flux_err] == '-' # Maschera per identificare i limiti superiori (dove l'errore è '-')
@@ -150,7 +151,7 @@ def main():
         weekly_df[flux] = weekly_df[flux].astype(float)
         weekly_df[flux_err] = weekly_df[flux_err].astype(float)
 
-        weekly_source_data[source] = {'df': weekly_df} # Aggiunta dei dataframe al dizionario 
+        weekly_source_data[source].update({'df': weekly_df}) # Aggiunta dei dataframe al dizionario 
 
     # Grafici delle curve di luce settimanali
     if args.clw:
