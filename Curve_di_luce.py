@@ -47,7 +47,7 @@ def trova_picco_spettro(frequencies, power):
 
     max_power = np.max(power) # Trova il valore massimo nell'array delle potenze
     max_frequencies = frequencies[power == max_power][0] # Applica una maschera all'array delle frequenze per trovare la frequenza corrispondente al picco massimo e poi estrae il primo valore     
-    max_period = 1 / max_frequencies # 
+    max_period = 1 / max_frequencies
 
     return max_frequencies, max_power, max_period
 
@@ -77,10 +77,13 @@ def genera_curve_sintetiche(source_data, flux, flux_err, number_synthetic_curves
 
         for i in range(number_synthetic_curves): # Ciclo per ripetere l'operazione di rimescolamento per il numero di curve sintetiche 
             synthetic_curve = source_df.copy() # Copia del dataframe della sorgente per creare una curva sintetica
-            order = np.arange(len(synthetic_curve)) # Array che contiene gli indici della curva di luce 
+
+            # Rimescolamento
+            order = np.arange(len(synthetic_curve)) # Array che contiene gli indici della curva di luce
             np.random.shuffle(order) # Rimescola casualmente gli indici 
             synthetic_curve[flux] = source_df[flux].values[order] # Rimescola i valori del flusso in base agli indici rimescolati prima
             synthetic_curve[flux_err] = source_df[flux_err].values[order] # Rimescola i valori dell'errore del flusso in base agli indici rimescolati prima
+
             synthetic_curves[source].append(synthetic_curve) # Aggiunge la curva sintetica alla lista delle curve sintetiche della sorgente
 
     return synthetic_curves
@@ -123,7 +126,7 @@ def main():
 
 # ANALISI SETTIMANALE ------------------------------------------
 
-    # Dizionario sorgenti settimanali con i percorsi dei file CSV locali
+    # Dizionario sorgenti settimanali con i percorsi dei file csv
     weekly_source_files = {
         '4FGL_J1104.4+3812': 'Dati/4FGL_J1104.4+3812_weekly_2_20_2025.csv',
         '4FGL_J1256.1-0547': 'Dati/4FGL_J1256.1-0547_weekly_2_20_2025.csv',
@@ -131,11 +134,13 @@ def main():
         '4FGL_J2253.9+1609': 'Dati/4FGL_J2253.9+1609_weekly_2_20_2025.csv',
     }
 
-    # Trasformazione dei dati settimanali in DataFrame e gestione dei limiti superiori    
+    # Trasformazione dei dati settimanali in dataFrame e gestione dei limiti superiori
     weekly_source_data = {} # Dizionario vuoto per contenere i dati delle sorgenti settimanali
-    for source in weekly_source_files: # Ciclo su tutte le sorgenti per leggere i file CSV e creare i DataFrame
+
+    for source in weekly_source_files: # Ciclo su tutte le sorgenti per leggere i file CSV e creare i dataFrame
         weekly_df = pd.read_csv(weekly_source_files[source])
 
+        # Gestione dei limiti superiori
         upper_limits = weekly_df[flux_err] == '-' # Maschera booleana per identificare i limiti superiori (dove l'errore è '-')
         for index in weekly_df.loc[upper_limits].index: # Seleziona gli indici delle righe con limiti superiori e modifica i valori del flusso e dell'errore
             weekly_df.loc[index, flux] = weekly_df.loc[index, flux][1:] # Rimuove il simbolo '<' dal flusso che è il primo carattere della stringa
@@ -144,7 +149,8 @@ def main():
         # Conversione delle colonne di flusso e di errore in valori numerici
         weekly_df[flux] = weekly_df[flux].astype(float)
         weekly_df[flux_err] = weekly_df[flux_err].astype(float)
-        weekly_source_data[source] = {'df': weekly_df}
+
+        weekly_source_data[source] = {'df': weekly_df} # Aggiunta al dizionario delle sorgenti del dataFrame della sorgente
 
     # Curve di luce settimanali
     if args.clw:
@@ -167,9 +173,9 @@ def main():
     # Calcolo dei coefficenti di fourier e frequenze 
     for source in weekly_source_data:
         source_df = weekly_source_data[source]['df']
-        dt = source_df[date][1] - source_df[date][0]
-        c = fft.fft(source_df[flux].values)
-        f = fft.fftfreq(len(c), d=dt)
+        dt = source_df[date][1] - source_df[date][0] # Calcolo dell'intervallo di tempo tra due osservazioni
+        c = fft.fft(source_df[flux].values) # Calcolo dei coefficienti di Fourier della curva di luce settimanale
+        f = fft.fftfreq(len(c), d=dt) # Calcolo delle frequenze corrispondenti ai coefficienti di Fourier
         weekly_source_data[source].update({'c': c, 'freq': f}) # Aggiunta al dizionario delle sorgenti dei coefficienti di Fourier e delle frequenze corrispondenti
 
     # Spettri di potenza settimanali 
@@ -184,14 +190,16 @@ def main():
             tmp_len = len(weekly_source_data[source]['c']) // 2
             frequencies_w = weekly_source_data[source]['freq'][2:tmp_len]
             powers_w = np.absolute(weekly_source_data[source]['c'][2:tmp_len]) ** 2
-            max_frequency, max_power, max_period = trova_picco_spettro(frequencies_w, powers_w)
-            errors_w = weekly_source_data[source]['df'][flux_err].values[2:tmp_len]
-            max_power_error = errors_w[powers_w == max_power][0]
-            period_years = max_period / 365 # Conversione del periodo da giorni ad anni
+            max_frequency, max_power, max_period = trova_picco_spettro(frequencies_w, powers_w) # Chiamata della funzione per trovare il picco massimo
+
+            # Calcolo dell'errore del picco massimo
+            errors_w = weekly_source_data[source]['df'][flux_err].values[2:tmp_len] # Estrae gli errori del flusso dal dataframe
+            max_power_error = errors_w[powers_w == max_power][0] # Individua l'errore corrispondente al picco massimo applicando una maschera
 
             # Calcolo del tempo di osservazione e del numero di cicli osservati durante il periodo di misurazione
-            observation_time = (weekly_source_data[source]['df'][date].iloc[-1] - weekly_source_data[source]['df'][date].iloc[0])
-            number_periods = observation_time / max_period
+            period_years = max_period / 365 # Conversione del periodo da giorni ad anni
+            observation_time = (weekly_source_data[source]['df'][date].iloc[-1] - weekly_source_data[source]['df'][date].iloc[0]) # Tempo di misurazione totale
+            number_periods = observation_time / max_period # Calcolo del numero di cicli osservati durante il periodo di misurazione
 
             # Print dei risultati 
             print('\nSorgente: {}\nFrequenza massima: {:.2e} 1/giorni\n' 'Potenza massima: {:.2e} ± {:.2e}\nPeriodo: {:.2f} giorni ({:.2f} anni)\n'
@@ -199,8 +207,7 @@ def main():
 
             # Grafici in scala log-log degli spettri di potenza settimanali
             axs[i].plot(frequencies_w, powers_w, color=colors[i], label=source)
-            axs[i].axvline(max_frequency, color='black', linestyle='--',
-                           label='Periodo: {:.2f} giorni'.format(max_period))
+            axs[i].axvline(max_frequency, color='black', linestyle='--', label='Periodo: {:.2f} giorni'.format(max_period))
             axs[i].set_xscale('log')
             axs[i].set_yscale('log')
             axs[i].set_xlabel(r'Frequenza [giorni$^{-1}$]')
@@ -223,6 +230,7 @@ def main():
             plt.plot(frequencies_w, powers_w, color=colors[i], label=source)
             i += 1
 
+    # Plot degli spettri di potenza settimanali in scala log-log
         plt.xscale('log')
         plt.yscale('log')
         plt.xlabel(r'Frequenza [giorni$^{-1}$]')
@@ -243,16 +251,17 @@ def main():
             tmp_len = len(weekly_source_data[source]['c']) // 2
             f = weekly_source_data[source]['freq'][2:tmp_len]
             psw = np.absolute(weekly_source_data[source]['c'][2:tmp_len]) ** 2
-            max_frequency, max_power, max_period = trova_picco_spettro(f, psw)
+            max_frequency, max_power, max_period = trova_picco_spettro(f, psw) # Chiamata della funzione per trovare il picco massimo
             pv, pc = optimize.curve_fit(fit_potenza, f, psw, p0=[1e-16, 1])
 
+            # Print dei risultati del fit
             print('\nSorgente: {}\nN = {:.2e} ± {:.2e}\n' 'β = {:.2f} ± {:.2f}'.format(source, pv[0], np.sqrt(pc[0, 0]),
                     pv[1], np.sqrt(pc[1, 1])))
 
+            # Plot degli spettri di potenza settimanali e dei fit
             axs[i].plot(f, psw, color=colors[i], label=source)
             axs[i].plot(f, fit_potenza(f, pv[0], pv[1]), color=fit_colors[i], label=f'Fit: β = {pv[1]:.2f} ± {np.sqrt(pc[1, 1]):.2f}')
-            axs[i].axvline(max_frequency, color='black', linestyle='--',
-                           label='Periodo: {:.2f} giorni'.format(max_period))
+            axs[i].axvline(max_frequency, color='black', linestyle='--', label='Periodo: {:.2f} giorni'.format(max_period))
             axs[i].set_xscale('log')
             axs[i].set_yscale('log')
             axs[i].set_xlabel(r'Frequenza [giorni$^{-1}$]')
@@ -271,22 +280,24 @@ def main():
     # Calcolo degli spettri di potenza sintetici
         synthetic_spectra_w = {} # Dizionario vuoto per contenere gli spettri di potenza sintetici per ogni sorgente
         for source in synthetic_curves_w:
-            synthetic_spectra_w[source] = []
+            synthetic_spectra_w[source] = [] # Crea una lista vuota per contenere gli spettri di potenza sintetici della sorgente
             for synthetic_curve in synthetic_curves_w[source]:
                 dt = synthetic_curve[date][1] - synthetic_curve[date][0]
                 c = fft.fft(synthetic_curve[flux].values)
                 f = fft.fftfreq(len(c), d=dt)
-                synthetic_spectra_w[source].append({'c': c, 'freq': f} )
+
+                synthetic_spectra_w[source].append({'c': c, 'freq': f} ) # Aggiunta al dizionario delle sorgenti degli spettri di potenza sintetici della sorgente
 
     # Calcolo della potenza massima per ogni curva sintetica
         synthetic_max_power_w = {} # Dizionario vuoto per contenere le potenze massime sintetiche per ogni sorgente
         for source in synthetic_spectra_w:
-            synthetic_max_power_w[source] = []
+            synthetic_max_power_w[source] = [] # Crea una lista vuota per contenere le potenze massime sintetiche della sorgente
             for spectrum in synthetic_spectra_w[source]:
                 tmp_len = len(spectrum['c']) // 2
                 max_power = trova_picco_spettro(spectrum['freq'][2:tmp_len], np.absolute(spectrum['c'][2:tmp_len]) ** 2)[1]
-                synthetic_max_power_w[source].append(max_power)
-            synthetic_max_power_w[source] = np.array(synthetic_max_power_w[source])
+
+                synthetic_max_power_w[source].append(max_power) # Aggiunta al dizionario delle sorgenti delle potenze massime sintetiche della sorgente
+            synthetic_max_power_w[source] = np.array(synthetic_max_power_w[source]) # Conversione della lista delle potenze massime sintetiche in un array
 
         fig, axs = plt.subplots(2, 2, figsize=(14, 10))
         axs = axs.flatten()
@@ -298,10 +309,11 @@ def main():
 
             for spectrum in synthetic_spectra_w[source]:
                 tmp_len = len(spectrum['c']) // 2
-                label = source if number == 0 else None
+                label = source if number == 0 else None # Solo alla prima curva per evitare duplicati
                 axs[i].plot(spectrum['freq'][2:tmp_len], np.absolute(spectrum['c'][2:tmp_len]) ** 2, alpha=0.01, color=colors[i], label=label)
                 number += 1
 
+        # Plot degli spettri di potenza sintetici settimanali in scala log-log
             axs[i].set_xscale('log')
             axs[i].set_yscale('log')
             axs[i].set_xlabel(r'Frequenza [giorni$^{-1}$]')
@@ -313,7 +325,7 @@ def main():
         plt.tight_layout()
         plt.show()
 
-        # Confronto tra le potenze massime sintetiche e quella osservata
+        # Confronto tra le potenze massime sintetiche e quella reale
         fig, axs = plt.subplots(2, 2, figsize=(14, 10))
         axs = axs.flatten()
         i = 0
@@ -324,18 +336,18 @@ def main():
             tmp_len = len(weekly_source_data[source]['c']) // 2
             real_frequencies = weekly_source_data[source]['freq'][2:tmp_len]
             real_power = np.absolute(weekly_source_data[source]['c'][2:tmp_len]) ** 2
-            real_max_power = trova_picco_spettro(real_frequencies, real_power)[1]
+            real_max_power = trova_picco_spettro(real_frequencies, real_power)[1] # Chiamata della funzione per trovare il picco massimo
 
-            synthetic_max_power = synthetic_max_power_w[source]
-            number_exceeding = np.sum(synthetic_max_power >= real_max_power)
-            number_synthetic = len(synthetic_max_power)
-            probability_percentage = number_exceeding / number_synthetic * 100
+        # Confronto tra le potenze massime sintetiche e quella reale
+            synthetic_max_power = synthetic_max_power_w[source] # Potenze massime sintetiche della sorgente
+            number_exceeding = np.sum(synthetic_max_power >= real_max_power) # Conteggio delle potenze massime sintetiche che superano o eguagliano quella reale
+            number_synthetic = len(synthetic_max_power) # Conteggio del numero totale di potenze massime sintetiche
+            probability_percentage = number_exceeding / number_synthetic * 100 # Calcolo della probabilità di ottenere un picco almeno altrettanto rilevante in percentuale
 
-            print('\nSorgente: {}\nPotenza massima reale: {:.2e}\n'
-                  'Curve sintetiche con un picco almeno altrettanto rilevante: {} su {}\n'
-                  'Probabilità di ottenere un picco almeno altrettanto rilevante: {:.1f}%'.format(
-                      source, real_max_power, number_exceeding,
-                      number_synthetic, probability_percentage))
+        # Print dei risultati dell'analisi dei picchi sintetici
+            print('\nSorgente: {}\nPotenza massima reale: {:.2e}\n' 'Curve sintetiche con un picco almeno altrettanto rilevante: {} su {}\n'
+                  'Probabilità di ottenere un picco almeno altrettanto rilevante: {:.1f}%'.format(source, real_max_power, number_exceeding,
+                    number_synthetic, probability_percentage))
 
         # Istogrammi che confrontano i massimi sintetici e della potenza massima reale
             axs[i].hist(synthetic_max_power, bins=5, color=colors[i], edgecolor='black', label='Massimi sintetici')
@@ -353,7 +365,7 @@ def main():
 
 # ANALISI MENSILE ------------------------------------------
 
-    # Dizionario sorgenti mensili con i percorsi dei file CSV locali
+    # Dizionario sorgenti mensili con i percorsi dei file csv
     monthly_source_files = {
         '4FGL_J1104.4+3812': 'Dati/4FGL_J1104.4+3812_monthly_2_20_2025.csv',
         '4FGL_J1256.1-0547': 'Dati/4FGL_J1256.1-0547_monthly_2_20_2025.csv',
@@ -361,11 +373,13 @@ def main():
         '4FGL_J2253.9+1609': 'Dati/4FGL_J2253.9+1609_monthly_2_20_2025.csv',
     }
 
-    # Trasformazione dei dati mensili in DataFrame e gestione dei limiti superiori
+    # Trasformazione dei dati mensili in dataFrame e gestione dei limiti superiori
     monthly_source_data = {} # Dizionario vuoto per contenere i dati delle sorgenti mensili
-    for source in monthly_source_files: # Ciclo su tutte le sorgenti per leggere i file CSV e creare i DataFrame
+
+    for source in monthly_source_files: # Ciclo su tutte le sorgenti per leggere i file CSV e creare i dataFrame
         monthly_df = pd.read_csv(monthly_source_files[source])
 
+        # Gestione dei limiti superiori
         upper_limits = monthly_df[flux_err] == '-' # Maschera booleana per identificare i limiti superiori (dove l'errore è '-')
         for index in monthly_df.loc[upper_limits].index: # Seleziona gli indici delle righe con limiti superiori e modifica i valori del flusso e dell'errore
             monthly_df.loc[index, flux] = monthly_df.loc[index, flux][1:] # Rimuove il simbolo '<' dal flusso che è il primo carattere della stringa
@@ -374,7 +388,7 @@ def main():
         # Conversione delle colonne di flusso e di errore in valori numerici
         monthly_df[flux] = monthly_df[flux].astype(float)
         monthly_df[flux_err] = monthly_df[flux_err].astype(float)
-        monthly_source_data[source] = {'df': monthly_df}
+        monthly_source_data[source] = {'df': monthly_df} # Aggiunta al dizionario delle sorgenti del dataFrame della sorgente
 
     # Curve di luce mensili
     if args.clm:
@@ -397,9 +411,9 @@ def main():
     # Calcolo dei coefficenti di fourier e frequenze
     for source in monthly_source_data:
         source_df = monthly_source_data[source]['df']
-        dt = source_df[date][1] - source_df[date][0]
-        c = fft.fft(source_df[flux].values)
-        f = fft.fftfreq(len(c), d=dt)
+        dt = source_df[date][1] - source_df[date][0] # Calcolo dell'intervallo di tempo tra due osservazioni
+        c = fft.fft(source_df[flux].values) # Calcolo dei coefficienti di Fourier della curva di luce mensile
+        f = fft.fftfreq(len(c), d=dt) # Calcolo delle frequenze corrispondenti ai coefficienti di Fourier
         monthly_source_data[source].update({'c': c, 'freq': f}) # Aggiunta al dizionario delle sorgenti dei coefficienti di Fourier e delle frequenze corrispondenti
 
     # Spettri di potenza mensili
@@ -408,20 +422,22 @@ def main():
         axs = axs.flatten()
         i = 0
 
-    # Analisi dei picchi degli spettri di potenza mensili
+        # Analisi dei picchi degli spettri di potenza mensili
         for source in monthly_source_data:
-            # La ricerca del picco esclude f=0, la prima componente e le frequenze negative
+            # La ricerca del picco esclude f=0, il primo bin positivo e le frequenze negative
             tmp_len = len(monthly_source_data[source]['c']) // 2
             frequencies_m = monthly_source_data[source]['freq'][2:tmp_len]
             powers_m = np.absolute(monthly_source_data[source]['c'][2:tmp_len]) ** 2
-            max_frequency, max_power, max_period = trova_picco_spettro(frequencies_m, powers_m)
-            errors_m = monthly_source_data[source]['df'][flux_err].values[2:tmp_len]
-            max_power_error = errors_m[powers_m == max_power][0]
-            period_years = max_period / 365 # Conversione del periodo da giorni ad anni
+            max_frequency, max_power, max_period = trova_picco_spettro(frequencies_m, powers_m) # Chiamata della funzione per trovare il picco massimo
+
+            # Calcolo dell'errore del picco massimo
+            errors_m = monthly_source_data[source]['df'][flux_err].values[2:tmp_len] # Estrae gli errori del flusso dal dataframe
+            max_power_error = errors_m[powers_m == max_power][0] # Individua l'errore corrispondente al picco massimo applicando una maschera
 
             # Calcolo del tempo di osservazione e del numero di cicli osservati durante il periodo di misurazione
-            observation_time = (monthly_source_data[source]['df'][date].iloc[-1] - monthly_source_data[source]['df'][date].iloc[0])
-            number_periods = observation_time / max_period
+            period_years = max_period / 365 # Conversione del periodo da giorni ad anni
+            observation_time = (monthly_source_data[source]['df'][date].iloc[-1] - monthly_source_data[source]['df'][date].iloc[0]) # Tempo di misurazione totale
+            number_periods = observation_time / max_period # Calcolo del numero di cicli osservati durante il periodo di misurazione
 
             # Print dei risultati
             print('\nSorgente: {}\nFrequenza massima: {:.2e} 1/giorni\n' 'Potenza massima: {:.2e} ± {:.2e}\nPeriodo: {:.2f} giorni ({:.2f} anni)\n'
@@ -429,8 +445,7 @@ def main():
 
             # Grafici in scala log-log degli spettri di potenza mensili
             axs[i].plot(frequencies_m, powers_m, color=colors[i], label=source)
-            axs[i].axvline(max_frequency, color='black', linestyle='--',
-                           label='Periodo: {:.2f} giorni'.format(max_period))
+            axs[i].axvline(max_frequency, color='black', linestyle='--', label='Periodo: {:.2f} giorni'.format(max_period))
             axs[i].set_xscale('log')
             axs[i].set_yscale('log')
             axs[i].set_xlabel(r'Frequenza [giorni$^{-1}$]')
@@ -453,6 +468,7 @@ def main():
             plt.plot(frequencies_m, powers_m, color=colors[i], label=source)
             i += 1
 
+        # Plot degli spettri di potenza mensili in scala log-log
         plt.xscale('log')
         plt.yscale('log')
         plt.xlabel(r'Frequenza [giorni$^{-1}$]')
@@ -473,16 +489,17 @@ def main():
             tmp_len = len(monthly_source_data[source]['c']) // 2
             f = monthly_source_data[source]['freq'][2:tmp_len]
             psm = np.absolute(monthly_source_data[source]['c'][2:tmp_len]) ** 2
-            max_frequency, max_power, max_period = trova_picco_spettro(f, psm)
+            max_frequency, max_power, max_period = trova_picco_spettro(f, psm) # Chiamata della funzione per trovare il picco massimo
             pv, pc = optimize.curve_fit(fit_potenza, f, psm, p0=[1e-16, 1])
 
+            # Print dei risultati del fit
             print('\nSorgente: {}\nN = {:.2e} ± {:.2e}\n' 'β = {:.2f} ± {:.2f}'.format(source, pv[0], np.sqrt(pc[0, 0]),
                     pv[1], np.sqrt(pc[1, 1])))
 
+            # Plot degli spettri di potenza mensili e dei fit
             axs[i].plot(f, psm, color=colors[i], label=source)
             axs[i].plot(f, fit_potenza(f, pv[0], pv[1]), color=fit_colors[i], label=f'Fit: β = {pv[1]:.2f} ± {np.sqrt(pc[1, 1]):.2f}')
-            axs[i].axvline(max_frequency, color='black', linestyle='--',
-                           label='Periodo: {:.2f} giorni'.format(max_period))
+            axs[i].axvline(max_frequency, color='black', linestyle='--', label='Periodo: {:.2f} giorni'.format(max_period))
             axs[i].set_xscale('log')
             axs[i].set_yscale('log')
             axs[i].set_xlabel(r'Frequenza [giorni$^{-1}$]')
@@ -498,40 +515,41 @@ def main():
     if args.psm:
         synthetic_curves_m = genera_curve_sintetiche(monthly_source_data, flux, flux_err, number_synthetic_curves) # Generazione curve di luce sintetiche
 
-    # Calcolo degli spettri di potenza sintetici
+        # Calcolo degli spettri di potenza sintetici
         synthetic_spectra_m = {} # Dizionario vuoto per contenere gli spettri di potenza sintetici per ogni sorgente
         for source in synthetic_curves_m:
-            synthetic_spectra_m[source] = []
+            synthetic_spectra_m[source] = [] # Crea una lista vuota per contenere gli spettri di potenza sintetici della sorgente
             for synthetic_curve in synthetic_curves_m[source]:
                 dt = synthetic_curve[date][1] - synthetic_curve[date][0]
                 c = fft.fft(synthetic_curve[flux].values)
                 f = fft.fftfreq(len(c), d=dt)
-                synthetic_spectra_m[source].append({'c': c, 'freq': f} )
+                synthetic_spectra_m[source].append({'c': c, 'freq': f} ) # Aggiunta al dizionario delle sorgenti degli spettri di potenza sintetici della sorgente
 
-    # Calcolo della potenza massima per ogni curva sintetica
+        # Calcolo della potenza massima per ogni curva sintetica
         synthetic_max_power_m = {} # Dizionario vuoto per contenere le potenze massime sintetiche per ogni sorgente
         for source in synthetic_spectra_m:
-            synthetic_max_power_m[source] = []
+            synthetic_max_power_m[source] = [] # Crea una lista vuota per contenere le potenze massime sintetiche della sorgente
             for spectrum in synthetic_spectra_m[source]:
                 tmp_len = len(spectrum['c']) // 2
                 max_power = trova_picco_spettro(spectrum['freq'][2:tmp_len], np.absolute(spectrum['c'][2:tmp_len]) ** 2)[1]
-                synthetic_max_power_m[source].append(max_power)
-            synthetic_max_power_m[source] = np.array(synthetic_max_power_m[source])
+                synthetic_max_power_m[source].append(max_power) # Aggiunta al dizionario delle sorgenti delle potenze massime sintetiche della sorgente
+            synthetic_max_power_m[source] = np.array(synthetic_max_power_m[source]) # Conversione della lista delle potenze massime sintetiche in un array
 
         fig, axs = plt.subplots(2, 2, figsize=(14, 10))
         axs = axs.flatten()
         i = 0
 
-    # Grafici log-log degli spettri di potenza sintetici mensili
+        # Grafici log-log degli spettri di potenza sintetici mensili
         for source in synthetic_spectra_m:
             number = 0
 
             for spectrum in synthetic_spectra_m[source]:
                 tmp_len = len(spectrum['c']) // 2
-                label = source if number == 0 else None
+                label = source if number == 0 else None # Solo alla prima curva per evitare duplicati
                 axs[i].plot(spectrum['freq'][2:tmp_len], np.absolute(spectrum['c'][2:tmp_len]) ** 2, alpha=0.01, color=colors[i], label=label)
                 number += 1
 
+            # Plot degli spettri di potenza sintetici mensili in scala log-log
             axs[i].set_xscale('log')
             axs[i].set_yscale('log')
             axs[i].set_xlabel(r'Frequenza [giorni$^{-1}$]')
@@ -543,7 +561,7 @@ def main():
         plt.tight_layout()
         plt.show()
 
-        # Confronto tra le potenze massime sintetiche e quella osservata
+        # Confronto tra le potenze massime sintetiche e quella reale
         fig, axs = plt.subplots(2, 2, figsize=(14, 10))
         axs = axs.flatten()
         i = 0
@@ -554,20 +572,22 @@ def main():
             tmp_len = len(monthly_source_data[source]['c']) // 2
             real_frequencies = monthly_source_data[source]['freq'][2:tmp_len]
             real_power = np.absolute(monthly_source_data[source]['c'][2:tmp_len]) ** 2
-            real_max_power = trova_picco_spettro(real_frequencies, real_power)[1]
+            real_max_power = trova_picco_spettro(real_frequencies, real_power)[1] # Chiamata della funzione per trovare il picco massimo
 
-            synthetic_max_power = synthetic_max_power_m[source]
-            number_exceeding = np.sum(synthetic_max_power >= real_max_power)
-            number_synthetic = len(synthetic_max_power)
-            probability_percentage = number_exceeding / number_synthetic * 100
+            # Confronto tra le potenze massime sintetiche e quella reale
+            synthetic_max_power = synthetic_max_power_m[source] # Potenze massime sintetiche della sorgente
+            number_exceeding = np.sum(synthetic_max_power >= real_max_power) # Conteggio delle potenze massime sintetiche che superano o eguagliano quella reale
+            number_synthetic = len(synthetic_max_power) # Conteggio del numero totale di potenze massime sintetiche
+            probability_percentage = number_exceeding / number_synthetic * 100 # Calcolo della probabilità di ottenere un picco almeno altrettanto rilevante in percentuale
 
+            # Print dei risultati dell'analisi dei picchi sintetici
             print('\nSorgente: {}\nPotenza massima reale: {:.2e}\n'
                   'Curve sintetiche con un picco almeno altrettanto rilevante: {} su {}\n'
                   'Probabilità di ottenere un picco almeno altrettanto rilevante: {:.1f}%'.format(
                       source, real_max_power, number_exceeding,
                       number_synthetic, probability_percentage))
 
-        # Istogrammi che confrontano i massimi sintetici e della potenza massima reale
+            # Istogrammi che confrontano i massimi sintetici e della potenza massima reale
             axs[i].hist(synthetic_max_power, bins=5, color=colors[i], edgecolor='black', label='Massimi sintetici')
             axs[i].axvline(real_max_power, color='black', linestyle='--', label='Massimo reale')
             axs[i].set_xscale('log')
